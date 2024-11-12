@@ -9,7 +9,7 @@ export const auth0 = await createAuth0Client({
 export const logout = async () => {
 	auth0.logout({
 		logoutParams: {
-			returnTo: 'http://localhost:3000/'
+			returnTo: 'http://localhost:5173/'
 		}
 	});
 };
@@ -18,6 +18,15 @@ export const login = async () => {
 	await auth0.loginWithRedirect({
 		authorizationParams: {
 			redirect_uri: 'http://localhost:5173/auth/callback'
+		}
+	});
+};
+
+export const signup = async () => {
+	await auth0.loginWithRedirect({
+		authorizationParams: {
+			redirect_uri: 'http://localhost:5173/auth/callback',
+			screen_hint: 'signup'
 		}
 	});
 };
