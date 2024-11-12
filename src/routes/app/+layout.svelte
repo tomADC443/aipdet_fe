@@ -1,8 +1,10 @@
 <script lang="ts">
 	import Nav from '$lib/components/navigation/nav/Nav.svelte';
 	import NavMobile from '$lib/components/navigation/nav/NavMobile.svelte';
+	import { ModeWatcher } from 'mode-watcher';
 </script>
 
+<ModeWatcher />;
 <div class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
 	<NavMobile />
 	<div class="flex flex-col">

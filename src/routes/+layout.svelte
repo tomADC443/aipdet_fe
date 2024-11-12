@@ -1,9 +1,8 @@
 <script lang="ts">
- import { ModeWatcher } from "mode-watcher";
- import '../app.pcss';
+	import '../app.pcss';
+	import { writable } from 'svelte/store';
 
+	export const isAuthenticated = writable(false);
 </script>
- 
-<ModeWatcher />
 
 <slot />
