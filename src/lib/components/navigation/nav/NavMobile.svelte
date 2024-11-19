@@ -1,24 +1,18 @@
 <script lang="ts">
-	import CircleUser from 'lucide-svelte/icons/circle-user';
 	import Menu from 'lucide-svelte/icons/menu';
 	import Leaf from 'lucide-svelte/icons/leaf';
 	import Search from 'lucide-svelte/icons/search';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import AccountButton from '$lib/components/navigation/AccountButton.svelte';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import { getNavFromPath } from '../utils';
 	import { navItems } from '../constants';
-	import NotLoggedInCard from '../../cards/NotLoggedInCard.svelte';
-	import { auth0 } from '../../../../routes/auth/service';
-	import { onMount } from 'svelte';
+	import NotLoggedInCardMobile from '../../cards/NotLoggedInCardMobile.svelte';
+	import { isUserLoggedIn, updateAuthStatus } from '../../../../routes/app/stores';
 
-	isUserAuthenticated;
-
-	onMount(async () => {
-		isUserAuthenticated = await auth0.isAuthenticated();
-	});
+	updateAuthStatus();
 
 	let route: string | undefined;
 	$: route = getNavFromPath($page.url.pathname);
@@ -59,9 +53,9 @@
 					{/if}
 				{/each}
 			</nav>
-			{#if !isUserAuthenticated}
+			{#if !$isUserLoggedIn}
 				<div class="mt-auto">
-					<NotLoggedInCard />
+					<NotLoggedInCardMobile />
 				</div>
 			{/if}
 		</Sheet.Content>
@@ -78,20 +72,7 @@
 			</div>
 		</form>
 	</div>
-	<DropdownMenu.Root>
-		<DropdownMenu.Trigger asChild let:builder>
-			<Button builders={[builder]} variant="secondary" size="icon" class="rounded-full">
-				<CircleUser class="h-5 w-5" />
-				<span class="sr-only">Toggle user menu</span>
-			</Button>
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content align="end">
-			<DropdownMenu.Label>My Account</DropdownMenu.Label>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Item>Settings</DropdownMenu.Item>
-			<DropdownMenu.Item>Support</DropdownMenu.Item>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Item>Logout</DropdownMenu.Item>
-		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+	{#if $isUserLoggedIn}
+		<AccountButton />
+	{/if}
 </header>

@@ -4,11 +4,11 @@
 </script>
 
 <Card.Root>
-	<Card.Header class="p-2 pt-0 md:p-4">
-		<Card.Title>Not Logged In</Card.Title>
+	<Card.Header>
+		<Card.Title>Not Logged in</Card.Title>
 		<Card.Description>Unlock all features and process your areas of interest.</Card.Description>
 	</Card.Header>
-	<Card.Content class="p-2 pt-0 md:p-4 md:pt-0">
-		<Button size="sm" class="w-full">Upgrade</Button>
+	<Card.Content>
+		<a href="/auth"> <Button size="sm" class="w-full">Log-in</Button></a>
 	</Card.Content>
 </Card.Root>

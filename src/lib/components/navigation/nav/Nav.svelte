@@ -3,11 +3,12 @@
 	import Leaf from 'lucide-svelte/icons/leaf';
 
 	import { page } from '$app/stores';
+	import NotLoggedInCard from '$lib/components/cards/NotLoggedInCardMobile.svelte';
 
 	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
 	import { getNavFromPath } from '../utils';
 	import { navItems } from '../constants';
+	import { isUserLoggedIn } from '../../../../routes/app/stores';
 
 	let route: string | undefined;
 	$: route = getNavFromPath($page.url.pathname);
@@ -48,18 +49,10 @@
 				{/each}
 			</nav>
 		</div>
-		<div class="mt-auto p-4">
-			<Card.Root>
-				<Card.Header class="p-2 pt-0 md:p-4">
-					<Card.Title>Upgrade to Pro</Card.Title>
-					<Card.Description>
-						Unlock all features and get unlimited access to our support team.
-					</Card.Description>
-				</Card.Header>
-				<Card.Content class="p-2 pt-0 md:p-4 md:pt-0">
-					<Button size="sm" class="w-full">Upgrade</Button>
-				</Card.Content>
-			</Card.Root>
-		</div>
+		{#if !$isUserLoggedIn}
+			<div class="mt-auto p-4">
+				<NotLoggedInCard />
+			</div>
+		{/if}
 	</div>
 </div>
