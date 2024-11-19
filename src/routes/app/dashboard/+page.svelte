@@ -1,16 +1,11 @@
 <script lang="ts">
 	import NotLoggedIn from '$lib/components/screens/NotLoggedIn.svelte';
-	import { auth0 } from '../../auth/service';
-	import { onMount } from 'svelte';
+	import { isUserLoggedIn, updateAuthStatus } from '../stores';
 
-	let isUserAuthenticated: null | boolean = null;
-
-	onMount(async () => {
-		isUserAuthenticated = await auth0.isAuthenticated();
-	});
+	updateAuthStatus();
 </script>
 
-{#if isUserAuthenticated}
+{#if $isUserLoggedIn}
 	<h1>you are logged in</h1>
 {:else}
 	<NotLoggedIn title="This is your Dashboard" />
