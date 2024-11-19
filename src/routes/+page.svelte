@@ -22,7 +22,7 @@
 		</h1>
 
 		<div>
-			<a href="/auth" class="text-white no-underline"> <Button>Login and try!</Button></a>
+			<a href="/auth" class="text-white no-underline"><Button>Let's Go!</Button></a>
 		</div>
 	</div>
 </main>
