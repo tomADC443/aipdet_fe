@@ -11,6 +11,7 @@
 	import { navItems } from '../constants';
 	import NotLoggedInCardMobile from '../../cards/NotLoggedInCardMobile.svelte';
 	import { isUserLoggedIn, updateAuthStatus } from '../../../../routes/app/stores';
+	import ThemeButton from '../ThemeButton.svelte';
 
 	updateAuthStatus();
 
@@ -72,6 +73,7 @@
 			</div>
 		</form>
 	</div>
+	<ThemeButton />
 	{#if $isUserLoggedIn}
 		<AccountButton />
 	{/if}
