@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { auth0, login, signup } from './service';
+	import { Button } from '$lib/components/ui/button';
+	import { login, signup } from './service';
 
 	async function handleLoginClick() {
+		console.log(`${import.meta.env.VITE_BASE_URL}/auth/callback`);
 		await login();
 	}
-	async function handleSingUpClick() {
+	async function handleSignUpClick() {
+		console.log(`${import.meta.env.VITE_BASE_URL}/auth/callback`);
 		await signup();
 	}
 </script>
@@ -20,7 +22,7 @@
 			<Button on:click={handleLoginClick} class="w-full">Log-in</Button>
 		</div>
 		<div class="gap-4 min-w-80">
-			<Button on:click={handleSingUpClick} class="w-full">Sign-in</Button>
+			<Button on:click={handleSignUpClick} class="w-full">Log-in</Button>
 		</div>
 		<div class="mt-4 text-sm">You will be redirected to the Authentication Provider</div>
 	</div>
