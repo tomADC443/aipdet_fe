@@ -1,15 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { login, signup } from './service';
 
-	async function handleLoginClick() {
-		console.log(`${import.meta.env.VITE_BASE_URL}/auth/callback`);
-		await login();
-	}
-	async function handleSignUpClick() {
-		console.log(`${import.meta.env.VITE_BASE_URL}/auth/callback`);
-		await signup();
-	}
+	const loginLink = `${import.meta.env.VITE_BASE_URL}/auth/login`;
+	const signupLink = `${import.meta.env.VITE_BASE_URL}/auth/signup`;
 </script>
 
 <div class="flex justify-center lg:flex-row items-stretch w-full min-h-screen">
@@ -19,10 +12,10 @@
 			<p class="text-muted-foreground text-balance">Log-in or Sign-up to access the app</p>
 		</div>
 		<div class="gap-4 min-w-80">
-			<Button on:click={handleLoginClick} class="w-full">Log-in</Button>
+			<a href={loginLink}><Button class="w-full">Login</Button></a>
 		</div>
 		<div class="gap-4 min-w-80">
-			<Button on:click={handleSignUpClick} class="w-full">Log-in</Button>
+			<a href={signupLink}><Button class="w-full">Sign-up</Button></a>
 		</div>
 		<div class="mt-4 text-sm">You will be redirected to the Authentication Provider</div>
 	</div>
