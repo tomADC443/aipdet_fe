@@ -59,7 +59,8 @@
 				{
 					method: 'POST',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						Connection: 'keep-alive'
 					},
 					body: JSON.stringify({ userId: user, password, token })
 				}
