@@ -10,10 +10,8 @@
 	import { getNavFromPath } from '../utils';
 	import { navItems } from '../constants';
 	import NotLoggedInCardMobile from '../../cards/NotLoggedInCardMobile.svelte';
-	import { isUserLoggedIn, updateAuthStatus } from '../../../../routes/app/stores';
+	import { isLoggedIn } from '../../../../routes/app/stores';
 	import ThemeButton from '../ThemeButton.svelte';
-
-	updateAuthStatus();
 
 	let route: string | undefined;
 	$: route = getNavFromPath($page.url.pathname);
@@ -54,7 +52,7 @@
 					{/if}
 				{/each}
 			</nav>
-			{#if !$isUserLoggedIn}
+			{#if !$isLoggedIn}
 				<div class="mt-auto">
 					<NotLoggedInCardMobile />
 				</div>
@@ -74,7 +72,7 @@
 		</form>
 	</div>
 	<ThemeButton />
-	{#if $isUserLoggedIn}
+	{#if $isLoggedIn}
 		<AccountButton />
 	{/if}
 </header>

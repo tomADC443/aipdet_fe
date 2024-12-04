@@ -1,12 +1,10 @@
 <script lang="ts">
 	import NotLoggedIn from '$lib/components/screens/NotLoggedIn.svelte';
 	import DashboardTable from '$lib/components/tables/DashboardTable.svelte';
-	import { isUserLoggedIn, updateAuthStatus } from '../stores';
-
-	updateAuthStatus();
+	import { isLoggedIn } from '../stores';
 </script>
 
-{#if $isUserLoggedIn}
+{#if $isLoggedIn}
 	<DashboardTable />
 {:else}
 	<NotLoggedIn title="This is your Dashboard" />

@@ -8,7 +8,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { getNavFromPath } from '../utils';
 	import { navItems } from '../constants';
-	import { isUserLoggedIn } from '../../../../routes/app/stores';
+	import { isLoggedIn } from '../../../../routes/app/stores';
 
 	let route: string | undefined;
 	$: route = getNavFromPath($page.url.pathname);
@@ -49,7 +49,7 @@
 				{/each}
 			</nav>
 		</div>
-		{#if !$isUserLoggedIn}
+		{#if !$isLoggedIn}
 			<div class="mt-auto p-4">
 				<NotLoggedInCard />
 			</div>
