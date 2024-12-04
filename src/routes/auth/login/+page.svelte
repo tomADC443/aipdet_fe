@@ -5,28 +5,55 @@
 	import { goto } from '$app/navigation'; // For navigation
 	import CircleAlert from 'lucide-svelte/icons/circle-alert';
 	import * as Alert from '$lib/components/ui/alert';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import { z } from 'zod';
 
 	// State for API error message
 	let apiError: null | string = null;
+	let isLoading = false;
 
+	let emailErrorMessage = '';
+	const emailSchema = z.string().email();
 	let email = '';
 	let password = '';
 
+	function handleEmailInput(event: Event) {
+		const input = event.target as HTMLInputElement;
+		const zodResult = emailSchema.safeParse(input.value);
+		email = input.value;
+		if (!zodResult.success) {
+			emailErrorMessage = zodResult.error.issues[0].message;
+		} else {
+			emailErrorMessage = '';
+		}
+	}
+
 	// Login handler
 	async function handleLogin() {
+		isLoading = true;
 		// Clear previous errors
 		apiError = null;
 
+		const zodResult = emailSchema.safeParse(email);
+
+		if (!zodResult.success) {
+			isLoading = false;
+			return;
+		}
 		try {
 			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/login', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
 				},
-				body: JSON.stringify({ email, password })
+				body: JSON.stringify({ email, password }),
+				credentials: 'include'
 			});
 
 			if (response.ok) {
+				const payload = await response.json();
+				localStorage.setItem('loginExpires', String(payload.expires));
 				// Login successful
 				goto('/dashboard'); // Redirect user to the dashboard or desired page
 			} else {
@@ -42,6 +69,8 @@
 		} catch (err) {
 			// Handle network or unexpected errors
 			apiError = 'Unable to connect to the server. Please try again later.';
+		} finally {
+			isLoading = false;
 		}
 	}
 </script>
@@ -58,7 +87,16 @@
 			<div class="grid gap-4">
 				<div class="grid gap-2">
 					<Label for="email">Email</Label>
-					<Input id="email" type="email" placeholder="m@example.com" bind:value={email} required />
+					<Input
+						id="email"
+						type="email"
+						placeholder="m@example.com"
+						on:input={handleEmailInput}
+						required
+					/>
+					{#if emailErrorMessage}
+						<span class="text-red-500 text-xs">{emailErrorMessage}</span>
+					{/if}
 				</div>
 				<div class="grid gap-2">
 					<div class="flex items-center">
@@ -69,8 +107,14 @@
 					</div>
 					<Input id="password" type="password" bind:value={password} required />
 				</div>
-				<Button type="button" class="w-full" on:click={handleLogin}>Login</Button>
-				<Button variant="outline" class="w-full">Login with Google</Button>
+				{#if isLoading}
+					<Button disabled class="w-full">
+						<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+						Please wait
+					</Button>
+				{:else}
+					<Button type="button" class="w-full" on:click={handleLogin}>Login</Button>
+				{/if}
 			</div>
 			<div class="mt-4 text-center text-sm">
 				Don&apos;t have an account?
