@@ -69,8 +69,8 @@
 			const apiResponse = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/signup', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
-					'Connection': 'keep-alive'
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
 				},
 				body: JSON.stringify(signupData)
 			});
