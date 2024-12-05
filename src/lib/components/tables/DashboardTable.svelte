@@ -4,9 +4,8 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import type { Variant as BadgeVariant } from '$lib/components/ui/badge/index.js';
 	import type { ButtonProps } from '$lib/components/ui/button/index.js';
-	import { updated } from '$app/stores';
 	import { Button } from '../ui/button';
-	import { selectedProcess } from '../../../routes/app/stores';
+	import { selectedTask } from '#app/stores';
 	function formatUnixTimestampToUTC(unixTimestamp: number): string {
 		const date = new Date(unixTimestamp * 1000);
 		return date.toISOString().split('T')[0];
@@ -96,7 +95,7 @@
 							>{order.isPublic ? 'PUBLIC' : 'PRIVATE'}
 						</Table.Cell>
 						<Table.Cell>
-							{#if $selectedProcess && $selectedProcess.id === order.id}
+							{#if $selectedTask && $selectedTask.id === order.id}
 								<Button size="sm" variant="secondary">Selected</Button>
 							{:else}
 								<Button size="sm" variant="outline" on:click={handleSelectClick(order.id)}
