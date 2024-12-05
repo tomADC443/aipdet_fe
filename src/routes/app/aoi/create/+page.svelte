@@ -3,18 +3,21 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import {
 		newAoiDataDescriptionSchema,
 		newAoiDataGeometrySchema,
 		newAoiDataNameSchema
-	} from './schema.ts';
+	} from '#app/aoi/schema';
 	import { Input } from '$lib/components/ui/input/index.ts';
 	import type { FormInputEvent } from '$lib/components/ui/input/index.ts';
 	import type { FormTextareaEvent } from '$lib/components/ui/textarea/index.ts';
 	import * as turf from '@turf/turf';
-	import { MAX_AREA_SKM, MIN_AREA_SKM } from './constants.ts';
+	import { MAX_AREA_SKM, MIN_AREA_SKM } from '#app/aoi/constants';
+	import toast from 'svelte-french-toast';
+
 	type NewAoiDataType = {
 		name: { value: string; valid: boolean; error: string };
 		description: { value: string; valid: boolean; error: string };
@@ -36,17 +39,66 @@
 		surfaceArea: null,
 		perimeter: null
 	};
+	let isLoading = false;
+
+	async function handleAoiSubmit() {
+		isLoading = true;
+		const zodResultName = newAoiDataNameSchema.safeParse(newAoiData.name.value);
+		const zodResultDescription = newAoiDataDescriptionSchema.safeParse(
+			newAoiData.description.value
+		);
+		const zodResultGeometry = newAoiDataGeometrySchema.safeParse(safeParseJsonGeometry());
+
+		if (!zodResultName.success || !zodResultDescription.success || !zodResultGeometry.success) {
+			toast.error('Invalid input data');
+			isLoading = false;
+			return;
+		}
+
+		try {
+			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aoi', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
+				},
+				body: JSON.stringify({
+					name: newAoiData.name.value,
+					description: newAoiData.description.value,
+					geometry: JSON.parse(newAoiData.geoJson.value)
+				}),
+				credentials: 'include'
+			});
+
+			if (response.ok) {
+				newAoiData = {
+					name: { value: '', valid: false, error: '' },
+					description: { value: '', valid: true, error: '' },
+					geoJson: { value: '', valid: false, error: '' }
+				};
+
+				toast.success('AOI saved successfully');
+			} else {
+				console.error('An error occurred', response);
+				toast.error('An error occurred. Please try again later.');
+			}
+		} catch (error) {
+			console.error('An error occurred', error);
+			toast.error('An error occurred. Please try again later.');
+		} finally {
+			isLoading = false;
+		}
+	}
 
 	function handleNameChange(event: FormInputEvent<Event>) {
 		const target = event.target as HTMLInputElement;
-		newAoiData.name.value = target?.value || '';
 		const zodResult = newAoiDataNameSchema.safeParse(newAoiData.name.value);
 		newAoiData.name.valid = zodResult.success;
 		newAoiData.name.error = zodResult.error?.issues[0].message || 'invalid';
 	}
 	function handleDescriptionChange(event: FormTextareaEvent<Event>) {
 		const target = event.target as HTMLTextAreaElement;
-		newAoiData.description.value = target?.value || '';
+
 		const zodResult = newAoiDataDescriptionSchema.safeParse(newAoiData.description.value);
 		newAoiData.description.valid = zodResult.success;
 		newAoiData.description.error = zodResult.error?.issues[0].message || 'invalid';
@@ -55,14 +107,7 @@
 	function handleGeoJsonChange(event: FormTextareaEvent<Event>) {
 		//checking against the schema (for improved error message)
 		const target = event.target as HTMLTextAreaElement;
-		newAoiData.geoJson.value = target?.value || '';
-		try {
-			var parsedJson = JSON.parse(newAoiData.geoJson.value);
-		} catch (error) {
-			newAoiData.geoJson.valid = false;
-			newAoiData.geoJson.error = 'invalid JSON';
-			return;
-		}
+		var parsedJson = safeParseJsonGeometry() as unknown as any;
 		const zodResult = newAoiDataGeometrySchema.safeParse(parsedJson);
 		newAoiData.geoJson.valid = zodResult.success;
 		if (!newAoiData.geoJson.valid) {
@@ -98,6 +143,16 @@
 			perimeter: turf.round(turf.length(turf.polygonToLine(polygon), { units: 'kilometers' }), 2)
 		};
 	}
+	function safeParseJsonGeometry(): undefined | Object {
+		try {
+			var parsedJson = JSON.parse(newAoiData.geoJson.value);
+		} catch (error) {
+			newAoiData.geoJson.valid = false;
+			newAoiData.geoJson.error = 'invalid JSON';
+			return;
+		}
+		return parsedJson;
+	}
 </script>
 
 <div class="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
@@ -124,6 +179,7 @@
 							</div>
 							<Input
 								on:input={handleNameChange}
+								bind:value={newAoiData.name.value}
 								id="name"
 								type="text"
 								class="w-full"
@@ -145,6 +201,7 @@
 								id="description"
 								placeholder="Add a description here..."
 								class="min-h-32"
+								bind:value={newAoiData.description.value}
 							/>
 						</div>
 					</div>
@@ -174,6 +231,7 @@
 								id="description"
 								placeholder={` { "type":Feature", "proerties": ... `}
 								on:input={handleGeoJsonChange}
+								bind:value={newAoiData.geoJson.value}
 							></Textarea>
 						</div>
 					</div>
@@ -220,9 +278,15 @@
 					</div>
 				</Card.Content>
 			</Card.Root>
-			<div class=" items-center gap-2 md:ml-auto md:flex">
-				<Button variant="outline" size="sm">Discard</Button>
-				<Button size="sm">Save Product</Button>
+			<div class="grid">
+				{#if isLoading}
+					<Button disabled class="">
+						<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+						Please wait
+					</Button>
+				{:else}
+					<Button on:click={handleAoiSubmit}>Save AOI</Button>
+				{/if}
 			</div>
 		</div>
 	</div>
