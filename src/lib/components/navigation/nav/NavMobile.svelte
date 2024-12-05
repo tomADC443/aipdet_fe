@@ -10,7 +10,7 @@
 	import { getNavFromPath } from '../utils';
 	import { navItems } from '../constants';
 	import NotLoggedInCardMobile from '../../cards/NotLoggedInCardMobile.svelte';
-	import { isLoggedIn } from '../../../../routes/app/stores';
+	import { isLoggedIn } from '#app/stores';
 	import ThemeButton from '../ThemeButton.svelte';
 
 	let route: string | undefined;

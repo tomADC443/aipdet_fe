@@ -8,7 +8,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { getNavFromPath } from '../utils';
 	import { navItems } from '../constants';
-	import { isLoggedIn } from '../../../../routes/app/stores';
+	import { isLoggedIn } from '#app/stores';
 
 	let route: string | undefined;
 	$: route = getNavFromPath($page.url.pathname);
