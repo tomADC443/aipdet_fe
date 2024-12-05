@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AoiTable from '$lib/components/tables/AoiTable.svelte';
+	import AoiTable from '$lib/components/tables/AOITable.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
