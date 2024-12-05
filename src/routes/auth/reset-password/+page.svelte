@@ -45,7 +45,8 @@
 			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/reset-password', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
 				},
 				body: JSON.stringify({ email })
 			});
