@@ -9,7 +9,7 @@
 	import { formatUnixTimestampToLocalTime } from '#routes/app/utils';
 
 	let aois: AOI[] = [];
-	let status: 'loading' | 'success' | 'empty' = 'loading';
+	let status: 'loading' | 'success' | 'empty' | 'error' = 'loading';
 	onMount(() => {
 		fetchAois();
 	});
@@ -27,7 +27,7 @@
 			const data = await response.json();
 
 			if (response.ok) {
-				aois = data;
+				aois = data.aois;
 				if (aois.length === 0) {
 					status = 'empty';
 				} else {
@@ -35,12 +35,12 @@
 				}
 				return;
 			} else {
-				status = 'empty';
+				status = 'error';
 				toast.error('Failed to get AOIs. Try again Later.');
 				console.error('Response not ok:', response.body);
 			}
 		} catch (error) {
-			status = 'empty';
+			status = 'error';
 			toast.error('Failed to get AOIs. Try again Later.');
 			console.error('Error fetching AOIs:', error);
 		}
@@ -53,7 +53,7 @@
 	}
 </script>
 
-// loading state
+<!-- LOADING State -->
 {#if status === 'loading'}
 	<Card.Root>
 		<Card.Header class="px-7">
@@ -68,7 +68,7 @@
 		</Card.Content>
 	</Card.Root>
 
-	// success state
+	<!-- Success State -->
 {:else if status === 'success'}
 	<Card.Root>
 		<Card.Header class="px-7">
@@ -109,8 +109,7 @@
 			</Table.Root>
 		</Card.Content>
 	</Card.Root>
-
-	// empty state
+	<!-- EMPTY state -->
 {:else if status === 'empty'}
 	<Card.Root>
 		<Card.Header class="px-7">
@@ -122,6 +121,19 @@
 				<h3 class="text-lg font-semibold">No Areas of Interest Found</h3>
 				<p class="text-sm text-gray-500">
 					You currently don’t have any processed areas. Start creating new areas to see them here.
+				</p>
+			</div>
+		</Card.Content>
+	</Card.Root>
+	<!-- ERROR state -->
+{:else if status === 'error'}
+	<Card.Root>
+		<Card.Header class="px-7"></Card.Header>
+		<Card.Content>
+			<div class="text-center py-4">
+				<h3 class="text-lg font-semibold">No Areas of Interest Found</h3>
+				<p class="text-sm text-gray-500">
+					There was an error fetching your areas. Please try again later.
 				</p>
 			</div>
 		</Card.Content>
