@@ -43,7 +43,7 @@
 >
 	<Card.Header class="px-7">
 		<Card.Title>Your Processed Areas</Card.Title>
-		<Card.Description>List of all of your processed areas.</Card.Description>
+		<Card.Description>List of all of your areas.</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<Table.Root>
