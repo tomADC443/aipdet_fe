@@ -156,6 +156,8 @@
 		const issue = zodResult.error.issues.find((i) => i.path[0] === field);
 		if (issue) {
 			newTaskDataErrors[field] = issue.message || 'invalid';
+		} else {
+			newTaskDataErrors[field] = null;
 		}
 	}
 	function getInputValue(event: Event): string {
@@ -234,10 +236,7 @@
 					<Button on:click={handleSubmit} type="submit" class="w-full mt-6">Create Task</Button>
 				{/if}
 			</div>
-			<div class="mt-4 text-center text-sm">
-				Already have an account?
-				<a href="/auth/login" class="underline"> Login </a>
-			</div>
+
 			{#if apiError}
 				<Alert.Root variant="destructive">
 					<CircleAlert class="h-4 w-4" />
