@@ -73,7 +73,7 @@
 	<Card.Root>
 		<Card.Header class="px-7">
 			<Card.Title>Your Areas of Interest</Card.Title>
-			<Card.Description>List of all of your processed areas.</Card.Description>
+			<Card.Description>List of all of your areas.</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<Table.Root>
@@ -114,7 +114,7 @@
 	<Card.Root>
 		<Card.Header class="px-7">
 			<Card.Title>Your Areas of Interest</Card.Title>
-			<Card.Description>List of all of your processed areas.</Card.Description>
+			<Card.Description>List of all of your areas.</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<div class="text-center py-4">
