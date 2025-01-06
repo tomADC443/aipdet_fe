@@ -33,32 +33,32 @@ export const isLoggedIn = derived([], () => isTokenValid());
 import { writable } from 'svelte/store';
 
 import type { Writable } from 'svelte/store';
-import { error } from '@sveltejs/kit';
 
-type SelectedTaskInfo = {
+
+export type SelectedTaskInfo = {
     id: string,
-    processName: string,
-    createdAt: string,
+    taskName: string,
+    createdAt: number,
     status: string,
 }
-export const selectedTask: Writable<SelectedTaskInfo | null> = writable(await getSelectedTaskIdFromURL());
+export const selectedTask: Writable<SelectedTaskInfo | null> = writable(null);
 
-export async function getSelectedTaskIdFromURL(): Promise<SelectedTaskInfo | null> {
-    const queryParam = new URLSearchParams(window.location.search).get('selected_process_id') || '';
-    if (!queryParam) return null;
-    return await getProcessInfoFromId(queryParam);
-}
-async function getProcessInfoFromId(selectedProcessId: string): Promise<SelectedTaskInfo | null> {
-    // Fetch process info from API
-    const isError = false;
-    if (isError) {
-        window.history.replaceState({}, document.title, window.location.pathname);
-        throw error(404, 'Entry for id not valid or deleted');
-    }
-    return Promise.resolve({
-        id: selectedProcessId,
-        processName: 'Some Name Here',
-        createdAt: '1732042266',
-        status: 'completed',
-    })
-}
+// export async function getSelectedTaskIdFromURL(): Promise<SelectedTaskInfo | null> {
+//     const queryParam = new URLSearchParams(window.location.search).get('selected_process_id') || '';
+//     if (!queryParam) return null;
+//     return await getProcessInfoFromId(queryParam);
+// }
+// async function getProcessInfoFromId(selectedProcessId: string): Promise<SelectedTaskInfo | null> {
+//     // Fetch process info from API
+//     const isError = false;
+//     if (isError) {
+//         window.history.replaceState({}, document.title, window.location.pathname);
+//         throw error(404, 'Entry for id not valid or deleted');
+//     }
+//     return Promise.resolve({
+//         id: selectedProcessId,
+//         taskName: 'Some Name Here',
+//         createdAt: 1732042266,
+//         status: 'completed',
+//     })
+// }

@@ -8,6 +8,7 @@
 	import { selectedTask } from '#app/stores';
 	import type { Task } from '#routes/app/task/types';
 	import toast from 'svelte-french-toast';
+	import type { SelectedTaskInfo } from '#app/stores';
 	function formatUnixTimestampToUTC(unixTimestamp: number): string {
 		const date = new Date(unixTimestamp * 1000);
 		return date.toISOString().split('T')[0];
@@ -32,9 +33,18 @@
 		}
 	}
 	function handleSelectClick(id: string) {
-		return () => {
-			console.log('Selected status:', id);
+		const selected_table_task = tasks.find((task) => task.id === id);
+		if (!selected_table_task) {
+			console.error('Task not found in tasks array:', id);
+			return;
+		}
+		const taskInfo: SelectedTaskInfo = {
+			id: selected_table_task.id,
+			taskName: selected_table_task.name,
+			createdAt: selected_table_task.createdAt,
+			status: selected_table_task.status
 		};
+		selectedTask.set(taskInfo);
 	}
 	async function handleDeleteClick(id: string) {
 		try {
