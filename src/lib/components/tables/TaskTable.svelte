@@ -7,6 +7,7 @@
 	import { Button } from '../ui/button';
 	import { selectedTask } from '#app/stores';
 	import type { Task } from '#routes/app/task/types';
+	import toast from 'svelte-french-toast';
 	function formatUnixTimestampToUTC(unixTimestamp: number): string {
 		const date = new Date(unixTimestamp * 1000);
 		return date.toISOString().split('T')[0];
@@ -34,6 +35,31 @@
 		return () => {
 			console.log('Selected status:', id);
 		};
+	}
+	async function handleDeleteClick(id: string) {
+		try {
+			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/task', {
+				method: 'DELETE',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
+				},
+				body: JSON.stringify({ id })
+			});
+
+			if (response.ok) {
+				tasks = tasks.filter((task) => task.id !== id);
+				toast.success('Task deleted successfully.');
+				return;
+			} else {
+				toast.error('Failed to delete Task. Try again Later.');
+				console.error('Response not ok:', response.body);
+			}
+		} catch (error) {
+			toast.error('Failed to delete Task. Try again Later.');
+			console.error('Error deleting Task:', error);
+		}
 	}
 </script>
 
@@ -76,13 +102,16 @@
 							{#if $selectedTask && $selectedTask.id === task.id}
 								<Button size="sm" variant="secondary">Selected</Button>
 							{:else}
-								<Button size="sm" variant="outline" on:click={handleSelectClick(task.id)}
+								<Button size="sm" variant="outline" on:click={() => handleSelectClick(task.id)}
 									>Select</Button
 								>
 							{/if}
 						</Table.Cell>
 						<Table.Cell>
-							<Button size="sm" variant={getDeleteButtonVariantByStatus(task.status)}>Delete</Button
+							<Button
+								size="sm"
+								on:click={() => handleDeleteClick(task.id)}
+								variant={getDeleteButtonVariantByStatus(task.status)}>Delete</Button
 							>
 						</Table.Cell>
 					</Table.Row>

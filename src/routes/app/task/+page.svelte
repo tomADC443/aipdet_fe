@@ -5,6 +5,11 @@
 	import type { Task } from '#app/task/types';
 	import Plus from 'lucide-svelte/icons/plus';
 	import toast from 'svelte-french-toast';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		fetchTasks();
+	});
 
 	let tasks: Task[] = [];
 	let status: 'loading' | 'success' | 'empty' | 'error' = 'loading';
@@ -21,7 +26,7 @@
 			const data = await response.json();
 
 			if (response.ok) {
-				tasks = data.aois;
+				tasks = data;
 				if (tasks.length === 0) {
 					status = 'empty';
 				} else {
@@ -64,7 +69,7 @@
 					<div class="grid gap-6"></div>
 				</Card.Content>
 			</Card.Root>
-			<TaskTable />
+			<TaskTable {tasks} />
 		</div>
 	</div>
 </div>
