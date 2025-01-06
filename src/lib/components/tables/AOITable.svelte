@@ -4,6 +4,7 @@
 	import type { AOI } from '#app/aoi/types';
 	import toast from 'svelte-french-toast';
 	import { onMount } from 'svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { formatUnixTimestampToLocalTime } from '#routes/app/utils';
@@ -46,10 +47,30 @@
 		}
 	}
 
-	function handleSelectClick(id: string) {
-		return () => {
-			console.log('Selected status:', id);
-		};
+	async function handleAoiDelete(id: string) {
+		try {
+			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aoi', {
+				method: 'DELETE',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
+				},
+				body: JSON.stringify({ id })
+			});
+
+			if (response.ok) {
+				aois = aois.filter((aoi) => aoi.id !== id);
+				toast.success('AOI deleted successfully.');
+				return;
+			} else {
+				toast.error('Failed to delete AOI. Try again Later.');
+				console.error('Response not ok:', response.body);
+			}
+		} catch (error) {
+			toast.error('Failed to delete AOI. Try again Later.');
+			console.error('Error deleting AOIs:', error);
+		}
 	}
 </script>
 
@@ -79,11 +100,11 @@
 			<Table.Root>
 				<Table.Header>
 					<Table.Row>
+						<Table.Head>ID</Table.Head>
 						<Table.Head>Name</Table.Head>
-						<Table.Head>Status</Table.Head>
-						<Table.Head class="hidden sm:table-cell">Created</Table.Head>
-						<Table.Head class="hidden md:table-cell">Scope</Table.Head>
-						<Table.Head>Select</Table.Head>
+						<Table.Head class="hidden sm:table-cell">Description</Table.Head>
+						<Table.Head class="hidden md:table-cell">Created at</Table.Head>
+
 						<Table.Head>Deletion</Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -102,6 +123,11 @@
 							</Table.Cell>
 							<Table.Cell class="hidden md:table-cell">
 								{formatUnixTimestampToLocalTime(aoi.createdAt)}
+							</Table.Cell>
+							<Table.Cell>
+								<Button size="sm" variant="outline" on:click={() => handleAoiDelete(aoi.id)}
+									>Delete</Button
+								>
 							</Table.Cell>
 						</Table.Row>
 					{/each}
