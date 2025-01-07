@@ -33,13 +33,14 @@ export const isLoggedIn = derived([], () => isTokenValid());
 import { writable } from 'svelte/store';
 
 import type { Writable } from 'svelte/store';
+import { TaskStatus } from './task/constants';
 
 
 export type SelectedTaskInfo = {
     id: string,
     taskName: string,
     createdAt: number,
-    status: string,
+    status: TaskStatus,
 }
 export const selectedTask: Writable<SelectedTaskInfo | null> = writable(null);
 

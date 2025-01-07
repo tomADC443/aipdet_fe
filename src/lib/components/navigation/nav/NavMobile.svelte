@@ -12,6 +12,7 @@
 	import NotLoggedInCardMobile from '../../cards/NotLoggedInCardMobile.svelte';
 	import { isLoggedIn } from '#app/stores';
 	import ThemeButton from '../ThemeButton.svelte';
+	import { selectedTask } from '#app/stores';
 
 	let route: string | undefined;
 	$: route = getNavFromPath($page.url.pathname);
@@ -60,16 +61,11 @@
 		</Sheet.Content>
 	</Sheet.Root>
 	<div class="w-full flex-1">
-		<form>
-			<div class="relative">
-				<Search class="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
-				<Input
-					type="search"
-					placeholder="Search products..."
-					class="bg-background w-full appearance-none pl-8 shadow-none md:w-2/3 lg:w-1/3"
-				/>
-			</div>
-		</form>
+		<div class="relative">
+			{#if $selectedTask}
+				<Button>{$selectedTask.taskName}</Button>
+			{/if}
+		</div>
 	</div>
 	<ThemeButton />
 	{#if $isLoggedIn}

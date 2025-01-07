@@ -9,6 +9,9 @@
 	import type { Task } from '#routes/app/task/types';
 	import toast from 'svelte-french-toast';
 	import type { SelectedTaskInfo } from '#app/stores';
+	import { TaskStatus } from '#routes/app/task/constants';
+	import BanIcon from 'lucide-svelte/icons/ban';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	function formatUnixTimestampToUTC(unixTimestamp: number): string {
 		const date = new Date(unixTimestamp * 1000);
 		return date.toISOString().split('T')[0];
@@ -42,7 +45,7 @@
 			id: selected_table_task.id,
 			taskName: selected_table_task.name,
 			createdAt: selected_table_task.createdAt,
-			status: selected_table_task.status
+			status: selected_table_task.status as TaskStatus
 		};
 		selectedTask.set(taskInfo);
 	}
@@ -59,6 +62,7 @@
 			});
 
 			if (response.ok) {
+				selectedTask.set(null);
 				tasks = tasks.filter((task) => task.id !== id);
 				toast.success('Task deleted successfully.');
 				return;
@@ -111,10 +115,21 @@
 						<Table.Cell>
 							{#if $selectedTask && $selectedTask.id === task.id}
 								<Button size="sm" variant="secondary">Selected</Button>
-							{:else}
+							{:else if task.status === TaskStatus.Successful}
 								<Button size="sm" variant="outline" on:click={() => handleSelectClick(task.id)}
 									>Select</Button
 								>
+							{:else}
+								<Tooltip.Root>
+									<Tooltip.Trigger>
+										<Button size="icon" variant="outline" disabled>
+											<BanIcon />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Status needs to be "Successful"</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
 							{/if}
 						</Table.Cell>
 						<Table.Cell>
