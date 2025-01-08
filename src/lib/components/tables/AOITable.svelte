@@ -18,7 +18,7 @@
 	async function fetchAois() {
 		status = 'loading';
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aoi', {
+			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aois', {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
