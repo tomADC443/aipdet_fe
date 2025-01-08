@@ -4,4 +4,5 @@ export type Task = {
     status: string;
     createdAt: number;
     isPublic: boolean;
+    aoiId: string;
 }

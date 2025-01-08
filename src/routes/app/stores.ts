@@ -41,6 +41,7 @@ export type SelectedTaskInfo = {
     taskName: string,
     createdAt: number,
     status: TaskStatus,
+    aoiId: string,
 }
 export const selectedTask: Writable<SelectedTaskInfo | null> = writable(null);
 

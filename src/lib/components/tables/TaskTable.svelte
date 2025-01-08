@@ -45,7 +45,8 @@
 			id: selected_table_task.id,
 			taskName: selected_table_task.name,
 			createdAt: selected_table_task.createdAt,
-			status: selected_table_task.status as TaskStatus
+			status: selected_table_task.status as TaskStatus,
+			aoiId: selected_table_task.aoiId
 		};
 		selectedTask.set(taskInfo);
 	}
