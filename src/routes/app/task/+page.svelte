@@ -16,7 +16,7 @@
 	async function fetchTasks() {
 		status = 'loading';
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/task', {
+			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/tasks', {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
