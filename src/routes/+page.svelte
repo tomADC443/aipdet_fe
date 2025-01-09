@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
+	import authImage from '$lib/img/authimg_small.jpg';
 </script>
 
 <main class="relative w-full h-screen overflow-hidden">

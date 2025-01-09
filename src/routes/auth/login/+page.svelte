@@ -131,7 +131,7 @@
 	</div>
 	<div class="hidden bg-muted lg:flex lg:basis-1/2">
 		<img
-			src="/src/lib/img/authimg_small.jpg"
+			src="$lib/img/authimg_small.jpg"
 			alt="satellite landscape of a river"
 			class="h-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>

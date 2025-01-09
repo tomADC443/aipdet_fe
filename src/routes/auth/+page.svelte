@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-
+	import authImage from '$lib/img/authimg_small.jpg';
 	const loginLink = `${import.meta.env.VITE_BASE_URL}/auth/login`;
 	const signupLink = `${import.meta.env.VITE_BASE_URL}/auth/signup`;
 </script>
@@ -21,8 +21,8 @@
 	</div>
 	<div class="hidden bg-muted lg:flex lg:basis-1/2">
 		<img
-			src="/src/lib/img/authimg_small.jpg"
-			alt="placeholder"
+			src={authImage}
+			alt="satellite landscape of a river - auth"
 			class="h-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>
 	</div>
