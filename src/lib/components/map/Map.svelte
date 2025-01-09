@@ -2,18 +2,38 @@
 	import { onMount } from 'svelte';
 	import L from 'leaflet';
 	import type { GeoJSON } from 'geojson';
+	import { fly } from 'svelte/transition';
 
-	export let center: [number, number] = [51.505, -0.09]; // Default center
-	export let zoom: number = 13; // Default zoom level
-	export let geoData: GeoJSON | null = null; // Optional GeoJSON data
-
+	export let geoData: GeoJSON | null = null;
 	let map: L.Map;
+	let geoLayer: L.GeoJSON | null = null;
+
+	// Abstracted function to handle GeoJSON updates with animation
+	function updateGeoJSON(map: L.Map, geoData: GeoJSON): L.GeoJSON {
+		const layer = L.geoJSON(geoData).addTo(map);
+
+		// Add animation options to fitBounds
+		map.fitBounds(layer.getBounds(), {
+			animate: true,
+			duration: 1.5, // Duration in seconds
+			easeLinearity: 0.25,
+			padding: [50, 50] // Optional padding around bounds
+		});
+
+		return layer;
+	}
+
+	// Reactive statement for geoData changes
+	$: if (map && geoData) {
+		if (geoLayer) {
+			geoLayer.remove();
+		}
+		geoLayer = updateGeoJSON(map, geoData);
+	}
 
 	onMount(() => {
-		// Initialize the map
-		map = L.map('map').setView(center, zoom);
+		map = L.map('map').setView([0, 0], 2);
 
-		// Add OpenStreetMap tiles as base layer
 		L.tileLayer('https://tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
 			attribution:
 				'<a href="https://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -22,12 +42,17 @@
 			accessToken: 'iZcdPCK8RIEe0pfME1sGkuIpZayzY0NpPcKswxMi81YuMzbHpJ6T5Yaf3UkgFqpm'
 		}).addTo(map);
 
-		// If GeoJSON data is passed, add it to the map
 		if (geoData) {
-			L.geoJSON(geoData).addTo(map);
+			geoLayer = updateGeoJSON(map, geoData);
 		}
+
+		return () => {
+			if (geoLayer) {
+				geoLayer.remove();
+			}
+			map.remove();
+		};
 	});
 </script>
 
-<!-- Map container styled using Tailwind CSS -->
 <div id="map" class="w-full h-96"></div>
