@@ -3,7 +3,7 @@ FROM node:20.9.0-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy both package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
@@ -30,12 +30,17 @@ FROM node:20.9.0-alpine
 
 WORKDIR /app
 
-# Copy package.json and install production dependencies
-COPY package.json .
-RUN npm ci --production
+# Copy both package files
+COPY --from=builder /app/package*.json ./
+
+# Install production dependencies
+RUN npm ci --omit=dev
 
 # Copy built application from builder
 COPY --from=builder /app/build .
+
+# Copy static files
+COPY --from=builder /app/static ./static
 
 # Expose the default SvelteKit port
 EXPOSE 3000
