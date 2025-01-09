@@ -18,12 +18,14 @@ COPY tailwind.config.js .
 COPY components.json .
 COPY eslint.config.js .
 
-# Copy source code and static files
+# Copy source code
 COPY src ./src
-COPY static ./static
 
 # Build the application
 RUN npm run build
+
+# Debug the build output
+RUN ls -la build/
 
 # Production stage
 FROM node:20.9.0-alpine
@@ -36,17 +38,20 @@ COPY --from=builder /app/package*.json ./
 # Install production dependencies
 RUN npm ci --omit=dev
 
-# Copy built application from builder
+# Copy built application and assets
 COPY --from=builder /app/build .
+COPY --from=builder /app/src/lib/img ./client/assets/img
 
-# Copy static files
-COPY --from=builder /app/static ./static
-
-# Expose the default SvelteKit port
-EXPOSE 3000
-
-# Set the environment to production
+# Set up environment
 ENV NODE_ENV=production
+ENV PORT=8080
+ENV ORIGIN=http://localhost:8080
+ENV PROTOCOL_HEADER=x-forwarded-proto
+ENV HOST_HEADER=x-forwarded-host
 
-# Start the application
+# Debug the final structure
+RUN ls -la && echo "Client directory:" && ls -la client || true
+
+EXPOSE 8080
+
 CMD ["node", "index.js"]
