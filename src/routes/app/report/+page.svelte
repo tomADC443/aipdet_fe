@@ -10,10 +10,11 @@
 	import { selectedTask } from '#app/stores';
 	import toast from 'svelte-french-toast';
 	import * as turf from '@turf/turf';
-	import type { N } from 'vitest/dist/chunks/environment.CzISCQ7o.js';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { any } from 'zod';
 	import type { NDVIAreaData, NDVIDataPoint } from './types';
+	import { spatialAnalysisData } from './temp.ts';
+	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
 
 	let totalImagesCountStatus: 'loading' | 'error' | 'success' = 'loading';
 	let totalImagesCountData: string | null = null;
@@ -232,8 +233,43 @@
 					{#if taskAoiStatus === 'loading'}
 						<Skeleton class="w-full h-96" />
 					{:else}
-						<Map geoData={taskAoi} />
+						<Map geoData={taskAoi} id="asd" />
 					{/if}
+				</div>
+			</Card.Header>
+			<Card.Content>
+				<div class="grid gap-6">
+					<div class="grid gap-3"></div>
+				</div>
+			</Card.Content>
+		</Card.Root>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Area of Interest</Card.Title>
+				<Card.Description>Shows the analysis area footprint</Card.Description>
+				<div class="relative">
+					<!-- Tailwind CSS classes to control the map's size -->
+					{#if taskAoiStatus === 'loading'}
+						<Skeleton class="w-full h-96" />
+					{:else}
+						<SpatialAnalysisMap geoData={taskAoi} />
+					{/if}
+				</div>
+			</Card.Header>
+			<Card.Content>
+				<div class="grid gap-6">
+					<div class="grid gap-3"></div>
+				</div>
+			</Card.Content>
+		</Card.Root>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Spatial Analysis</Card.Title>
+				<Card.Description>Shows the analysis area footprint</Card.Description>
+				<div class="relative">
+					<!-- Tailwind CSS classes to control the map's size -->
+
+					<SpatialAnalysisMap geoData={spatialAnalysisData} id="map2" />
 				</div>
 			</Card.Header>
 			<Card.Content>
