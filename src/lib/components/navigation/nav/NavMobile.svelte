@@ -18,7 +18,9 @@
 	$: route = getNavFromPath($page.url.pathname);
 </script>
 
-<header class="bg-muted/40 flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
+<header
+	class="bg-muted/95 flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6 sticky top-0 z-10"
+>
 	<Sheet.Root>
 		<Sheet.Trigger asChild let:builder>
 			<Button variant="outline" size="icon" class="shrink-0 md:hidden" builders={[builder]}>
@@ -63,7 +65,7 @@
 	<div class="w-full flex-1">
 		<div class="relative">
 			{#if $selectedTask}
-				<Button>{$selectedTask.taskName}</Button>
+				<Button>{$selectedTask.name}</Button>
 			{/if}
 		</div>
 	</div>
