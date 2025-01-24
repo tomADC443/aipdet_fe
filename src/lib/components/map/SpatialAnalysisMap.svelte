@@ -5,7 +5,6 @@
 
 	export let geoData: GeoJSON;
 	let map: L.Map;
-	let geoLayer: L.GeoJSON | null = null;
 
 	onMount(() => {
 		map = L.map('map').setView([0, 0], 2);
@@ -25,37 +24,42 @@
 
 				return {
 					fillColor: getColor(value), // Function to map value to color
-					fillOpacity: 0.5,
+					fillOpacity: 0.8,
 					opacity: 0,
 					stroke: false
 				};
 			},
 			onEachFeature: (feature, layer) => {
-				const score = feature.properties?.ndvi_score;
-				layer.bindTooltip(`NDVI Score: ${score?.toFixed(2) || 'N/A'}`);
+				const score = feature.properties.ndvi_score as number;
+				layer.bindTooltip(`NDVI Score: ${Number(score * 100).toFixed(2) || 'N/A'}`);
 			}
 		}).addTo(map);
 		map.fitBounds(layer.getBounds());
+		return () => {
+			if (layer) {
+				layer.remove();
+			}
+			map.remove();
+		};
 	});
 
 	function getColor(value: number) {
-		// Example color scale
 		return value > 0.5
-			? '#1E123E'
+			? '#001A00'
 			: value > 0.3
-				? '#3c247d'
+				? '#003300'
 				: value > 0.2
-					? '#7748f9'
+					? '#004D00'
 					: value > 0.15
-						? '#9976FB'
+						? '#006600'
 						: value > 0.1
-							? '#C0abfc'
+							? '#008000'
 							: value > 0.05
-								? '#E2dBff'
+								? '#339933'
 								: value > 0.03
-									? '#F3F0FF'
-									: '#FFFFFF';
+									? '#66B366'
+									: '#99CC99';
 	}
 </script>
 
-<div id="map" class="w-full h-96"></div>
+<div id="map" class="w-full h-full"></div>
