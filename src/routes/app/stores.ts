@@ -1,4 +1,7 @@
 import { derived } from 'svelte/store';
+import { writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
+import type { Task } from './task/types';
 
 // Utility function to decode and validate the JWT token
 function isTokenValid() {
@@ -30,20 +33,11 @@ export const isLoggedIn = derived([], () => isTokenValid());
 
 
 
-import { writable } from 'svelte/store';
-
-import type { Writable } from 'svelte/store';
-import { TaskStatus } from './task/constants';
 
 
-export type SelectedTaskInfo = {
-    id: string,
-    taskName: string,
-    createdAt: number,
-    status: TaskStatus,
-    aoiId: string,
-}
-export const selectedTask: Writable<SelectedTaskInfo | null> = writable(null);
+
+
+export const selectedTask: Writable<Task | null> = writable(null);
 
 // export async function getSelectedTaskIdFromURL(): Promise<SelectedTaskInfo | null> {
 //     const queryParam = new URLSearchParams(window.location.search).get('selected_process_id') || '';

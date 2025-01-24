@@ -8,7 +8,6 @@
 	import { selectedTask } from '#app/stores';
 	import type { Task } from '#routes/app/task/types';
 	import toast from 'svelte-french-toast';
-	import type { SelectedTaskInfo } from '#app/stores';
 	import { TaskStatus } from '#routes/app/task/constants';
 	import BanIcon from 'lucide-svelte/icons/ban';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
@@ -41,13 +40,7 @@
 			console.error('Task not found in tasks array:', id);
 			return;
 		}
-		const taskInfo: SelectedTaskInfo = {
-			id: selected_table_task.id,
-			taskName: selected_table_task.name,
-			createdAt: selected_table_task.createdAt,
-			status: selected_table_task.status as TaskStatus,
-			aoiId: selected_table_task.aoiId
-		};
+		const taskInfo: Task = selected_table_task;
 		selectedTask.set(taskInfo);
 	}
 	async function handleDeleteClick(id: string) {
