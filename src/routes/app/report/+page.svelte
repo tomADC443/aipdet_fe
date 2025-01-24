@@ -2,40 +2,100 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import type { Feature, Polygon } from 'geojson';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import * as Card from '$lib/components/ui/card/index';
 	import Map from '$lib/components/map/Map.svelte';
-	import LineChart from '$lib/components/chart/LineChart.svelte';
+	import Chart from '$lib/components/chart/Chart.svelte';
 	import type { ChartConfiguration } from 'chart.js';
 	import { onMount } from 'svelte';
 	import { selectedTask } from '#app/stores';
 	import toast from 'svelte-french-toast';
-	import * as turf from '@turf/turf';
-	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
-	import { any } from 'zod';
 	import type { NDVIAreaData, NDVIDataPoint } from './types';
 	import { spatialAnalysisData } from './temp.ts';
 	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
+	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
+	import { calculateDateDifference } from './utils.ts';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import { Separator } from '$lib/components/ui/separator/index.js';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 
-	let totalImagesCountStatus: 'loading' | 'error' | 'success' = 'loading';
-	let totalImagesCountData: string | null = null;
+	type DashboardFetchData = {
+		status: 'loading' | 'error' | 'success';
+		data: any | null;
+	};
+	let totalImageCount: DashboardFetchData = {
+		status: 'loading',
+		data: null
+	};
+	let temporalRange: DashboardFetchData = {
+		status: 'loading',
+		data: null
+	};
+	let totalObservedArea: DashboardFetchData = {
+		status: 'loading',
+		data: null
+	};
+	let ndviHeatMap: DashboardFetchData = {
+		status: 'loading',
+		data: null
+	};
+	let ndviSeason: DashboardFetchData = {
+		status: 'loading',
+		data: null
+	};
+	let availableDates: DashboardFetchData = {
+		status: 'loading',
+		data: null
+	};
+	let inspectorData: DashboardFetchData = {
+		status: 'success',
+		data: null
+	};
 
-	let taskAoiStatus: 'loading' | 'error' | 'success' = 'loading';
-	let taskAoi: Feature<Polygon> | null = null;
-	let taskAoiCenterPoint: [number, number] | null = null;
+	async function handleDateClick(dateString: string) {
+		if (!$selectedTask) return;
+		inspectorData = {
+			status: 'loading',
+			data: null
+		};
+		inspectorData = await fetchInspectorData($selectedTask.id, dateString);
+	}
 
-	let ndviAreaDataStatus: 'loading' | 'error' | 'success' = 'loading';
-	let ndviAreaData: NDVIAreaData | null = null;
-	let ndviAreaChartData: ChartConfiguration<'line', number[], string> | null = null;
+	function getNdviSeasonDataChartConfig(labels: string[], data: number[]): ChartConfiguration {
+		return {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [
+					{
+						label: 'Some Data here',
+						data: data,
+						fill: true,
+						backgroundColor: '#4CAF50'
+					}
+				]
+			},
+			options: {
+				responsive: true
+			}
+		};
+	}
 
-	onMount(() => {
+	onMount(async () => {
 		if ($selectedTask) {
-			fetchTotalImagesCount($selectedTask.id);
-			fetchSpecificAOI($selectedTask.aoiId);
-			fetchNdviAreaData($selectedTask.id);
+			totalImageCount = await fetchTotalImageCount($selectedTask.id);
+			temporalRange = await fetchTemporalRange($selectedTask.id);
+			totalObservedArea = await fetchTotalObservedArea($selectedTask.id);
+			ndviHeatMap = await fetchNdviHeatMap($selectedTask.id);
+			ndviSeason = await fetchNdviSeasonData($selectedTask.id);
+			availableDates = await fetchAvailableDates($selectedTask.id);
+			// await fetchSpecificAOI($selectedTask.aoiId);
+			// fetchNdviAreaData($selectedTask.id);
 		}
 	});
 
-	async function fetchTotalImagesCount(taskId: string) {
+	async function fetchTotalImageCount(taskId: string): Promise<DashboardFetchData> {
 		try {
 			const response = await fetch(
 				`${import.meta.env.VITE_BASE_URL_API}/api/report/number-total-distinct-images?taskId=${taskId}`,
@@ -50,63 +110,28 @@
 				}
 			);
 			const data = await response.json();
-
 			if (response.ok) {
-				totalImagesCountData = String(data.count);
-				totalImagesCountStatus = 'success';
-				return;
+				return {
+					status: 'success',
+					data: String(data.count)
+				};
 			} else {
-				totalImagesCountData = 'Error';
-				totalImagesCountStatus = 'error';
-
-				toast.error('Failed to get Total Image Count . Try again Later.');
-				console.error('Response not ok:', response.body);
+				throw `Response not ok ${response}`;
 			}
 		} catch (error) {
-			totalImagesCountData = 'Error';
-			totalImagesCountStatus = 'error';
-
-			toast.error('Failed to get Total Image Count. Try again Later.');
-			console.error('Failed to get Total Image Count', error);
+			console.log(error);
+			toast.error('Failed to load Image Count data. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
 		}
 	}
-
-	async function fetchSpecificAOI(id: string) {
-		try {
-			const response = await fetch(`${import.meta.env.VITE_BASE_URL_API}/api/aoi?id=${id}`, {
-				method: 'GET',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json',
-					Connection: 'keep-alive'
-				}
-			});
-			let data = await response.json();
-			data = data.aoi;
-
-			if (response.ok && data.geometry) {
-				taskAoiStatus = 'success';
-				// Type assertion for the polygon feature
-				taskAoi = data.geometry as Feature<Polygon>;
-				return;
-			} else {
-				taskAoiStatus = 'error';
-
-				toast.error('Failed to get AOI. Try again Later.');
-				console.error('AOI Response not ok:', response.body);
-			}
-		} catch (error) {
-			taskAoiStatus = 'error';
-
-			toast.error('Failed to get AOI Try again Later.');
-			console.error('Failed to get AOI', error);
-		}
-	}
-
-	async function fetchNdviAreaData(taskId: string) {
+	async function fetchTemporalRange(taskId: string): Promise<DashboardFetchData> {
 		try {
 			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/ndvi-area-data?taskId=${taskId}`,
+				`${import.meta.env.VITE_BASE_URL_API}/api/report/temporal-range?taskId=${taskId}`,
+
 				{
 					method: 'GET',
 					credentials: 'include',
@@ -116,166 +141,506 @@
 					}
 				}
 			);
-			const data = (await response.json()) as NDVIAreaData;
+			const data = await response.json();
 
-			if (response.ok && data) {
-				taskAoiStatus = 'success';
-
-				ndviAreaDataStatus = 'success';
-				ndviAreaData = data;
-
-				ndviAreaChartData = {
-					type: 'line',
-					data: {
-						labels: data.map((datapoint: NDVIDataPoint) => datapoint.date),
-						datasets: [
-							{
-								label: 'Example Data',
-								data: data.map((datapoint: NDVIDataPoint) => datapoint.value),
-								fill: false,
-								borderColor: 'rgb(75, 192, 192)'
-							}
-						]
-					},
-					options: {
-						responsive: true
-					}
+			if (response.ok) {
+				return {
+					status: 'success',
+					data: data
 				};
-
-				return;
 			} else {
-				ndviAreaDataStatus = 'error';
-
-				toast.error('Failed to get Biomass area data. Try again Later.');
-				console.error('Biomass area data Response not ok:', response.body);
+				throw `Response not ok ${response}`;
 			}
 		} catch (error) {
-			ndviAreaDataStatus = 'error';
-
-			toast.error('Failed to get Biomass area data. Try again Later.');
-			console.error('Failed to get Biomass area data', error);
+			console.log(error);
+			toast.error('Failed to load Temporal Range. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
 		}
 	}
+	async function fetchTotalObservedArea(taskId: string): Promise<DashboardFetchData> {
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_BASE_URL_API}/api/report/total-observed-area?taskId=${taskId}`,
+
+				{
+					method: 'GET',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						Connection: 'keep-alive'
+					}
+				}
+			);
+			const data = await response.json();
+			if (response.ok) {
+				return {
+					status: 'success',
+					data: data.area
+				};
+			} else {
+				throw `Response not ok ${response}`;
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Failed to load Total Observed Area data. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
+		}
+	}
+	async function fetchNdviHeatMap(taskId: string): Promise<DashboardFetchData> {
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_BASE_URL_API}/api/report/spatial-analysis?taskId=${taskId}`,
+
+				{
+					method: 'GET',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						Connection: 'keep-alive'
+					}
+				}
+			);
+			const data = await response.json();
+			if (response.ok) {
+				return {
+					status: 'success',
+					data: data
+				};
+			} else {
+				throw `Response not ok ${response}`;
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Failed to load Biomass Heatmap data. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
+		}
+	}
+	async function fetchNdviSeasonData(taskId: string): Promise<DashboardFetchData> {
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_BASE_URL_API}/api/report/season-analysis?taskId=${taskId}`,
+
+				{
+					method: 'GET',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						Connection: 'keep-alive'
+					}
+				}
+			);
+			const data = await response.json();
+			if (response.ok) {
+				return {
+					status: 'success',
+					data: data
+				};
+			} else {
+				throw `Response not ok ${response}`;
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Failed to load NDVI Season Data. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
+		}
+	}
+	async function fetchAvailableDates(taskId: string): Promise<DashboardFetchData> {
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_BASE_URL_API}/api/report/available-dates?taskId=${taskId}`,
+
+				{
+					method: 'GET',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						Connection: 'keep-alive'
+					}
+				}
+			);
+			const data = await response.json();
+			if (response.ok) {
+				return {
+					status: 'success',
+					data: data
+				};
+			} else {
+				throw `Response not ok ${response}`;
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Failed to Inspector data. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
+		}
+	}
+	async function fetchInspectorData(
+		taskId: string,
+		dateString: string
+	): Promise<DashboardFetchData> {
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_BASE_URL_API}/api/report/analysis-record?taskId=${taskId}&&dateString=${dateString}`,
+
+				{
+					method: 'GET',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						Connection: 'keep-alive'
+					}
+				}
+			);
+			const data = await response.json();
+			if (response.ok) {
+				return {
+					status: 'success',
+					data: data
+				};
+			} else {
+				throw `Response not ok ${response}`;
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Failed to load Inspector data. Try again Later.');
+			return {
+				status: 'error',
+				data: null
+			};
+		}
+	}
+
+	// async function fetchNdviAreaData(taskId: string) {
+	// 	try {
+	// 		const response = await fetch(
+	// 			`${import.meta.env.VITE_BASE_URL_API}/api/report/ndvi-area-data?taskId=${taskId}`,
+	// 			{
+	// 				method: 'GET',
+	// 				credentials: 'include',
+	// 				headers: {
+	// 					'Content-Type': 'application/json',
+	// 					Connection: 'keep-alive'
+	// 				}
+	// 			}
+	// 		);
+	// 		const data = (await response.json()) as NDVIAreaData;
+
+	// 		if (response.ok && data) {
+	// 			taskAoiStatus = 'success';
+
+	// 			ndviAreaDataStatus = 'success';
+	// 			ndviAreaData = data;
+
+	// 			ndviAreaChartData = {
+	// 				type: 'line',
+	// 				data: {
+	// 					labels: data.map((datapoint: NDVIDataPoint) => datapoint.date),
+	// 					datasets: [
+	// 						{
+	// 							label: 'Example Data',
+	// 							data: data.map((datapoint: NDVIDataPoint) => datapoint.value),
+	// 							fill: false,
+	// 							borderColor: 'rgb(75, 192, 192)'
+	// 						}
+	// 					]
+	// 				},
+	// 				options: {
+	// 					responsive: true
+	// 				}
+	// 			};
+
+	// 			return;
+	// 		} else {
+	// 			ndviAreaDataStatus = 'error';
+
+	// 			toast.error('Failed to get Biomass area data. Try again Later.');
+	// 			console.error('Biomass area data Response not ok:', response.body);
+	// 		}
+	// 	} catch (error) {
+	// 		ndviAreaDataStatus = 'error';
+
+	// 		toast.error('Failed to get Biomass area data. Try again Later.');
+	// 		console.error('Failed to get Biomass area data', error);
+	// 	}
+	// }
 </script>
 
 {#if $selectedTask}
 	<div class="mx-auto grid flex-1 auto-rows-max gap-4">
-		<div class="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-			<Card.Root>
-				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-					<Card.Title class="text-sm font-medium">Images Count</Card.Title>
-					<!-- <DollarSign class="text-muted-foreground h-4 w-4" /> -->
-				</Card.Header>
-				<Card.Content>
-					<div class="text-6xl font-bold">
-						{#if totalImagesCountStatus === 'loading'}
-							<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
-						{:else}
-							{totalImagesCountData}
-						{/if}
-					</div>
-					<p class="text-muted-foreground text-xs">
-						Number of analyzed Images with at least partial cloud-free surface reflectance data
-					</p>
-				</Card.Content>
-			</Card.Root>
-
-			<Card.Root class="">
-				<Card.Header>
-					<Card.Title>Line Chart</Card.Title>
-					<Card.Description>Check out this line chart inside a card!</Card.Description>
-					<div class="relative">
-						{#if ndviAreaDataStatus == 'loading'}
-							<LoaderCircle class="mr-2 h-full w-full animate-spin" />
-						{:else if ndviAreaDataStatus == 'error' || !ndviAreaChartData}
-							<p class="text-muted-foreground">Failed to get Biomass area data. Try again Later.</p>
-						{:else}
-							<!-- Tailwind CSS classes to control the chart's size -->
-							<LineChart chartData={ndviAreaChartData} />
-						{/if}
-					</div>
-				</Card.Header>
-				<Card.Content>
-					<div class="grid gap-6">
-						<div class="grid gap-3"></div>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-		<Card.Root class="">
+		<Card.Root>
 			<Card.Header>
-				<Card.Title>Line Chart</Card.Title>
+				<Card.Title>General INFO</Card.Title>
 				<Card.Description>Check out this line chart inside a card!</Card.Description>
-				<div class="relative">
-					{#if ndviAreaDataStatus == 'loading'}
-						<LoaderCircle class="mr-2 h-full w-full animate-spin" />
-					{:else if ndviAreaDataStatus == 'error' || !ndviAreaChartData}
-						<p class="text-muted-foreground">Failed to get Biomass area data. Try again Later.</p>
-					{:else}
-						<!-- Tailwind CSS classes to control the chart's size -->
-						<LineChart chartData={ndviAreaChartData} />
-					{/if}
-				</div>
 			</Card.Header>
-			<Card.Content>
-				<div class="grid gap-6">
-					<div class="grid gap-3"></div>
-				</div>
+			<Card.Content class="flex flex-row gap-4">
+				<!-- TASK -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Task</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{$selectedTask.name}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Created {new Date($selectedTask.createdAt * 1000).toDateString()}
+					</Card.Content>
+				</Card.Root>
+				<!-- IMAGE COUNT -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Image Count</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if totalImageCount.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if totalImageCount.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							{totalImageCount.data}
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Number of analyzed Images with at least partial cloud-free surface reflectance data
+					</Card.Content>
+				</Card.Root>
+				<!-- Temporal Range -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Temporal Range</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if temporalRange.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if temporalRange.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							<div class="pb-2">
+								{calculateDateDifference(temporalRange.data.fromDate, temporalRange.data.toDate)
+									.years} Years
+							</div>
+							<div class="overline">
+								{calculateDateDifference(temporalRange.data.fromDate, temporalRange.data.toDate)
+									.months} Months
+							</div>
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Difference between the earliest
+						{temporalRange.data ? `(${temporalRange.data.fromDate})` : ''}
+						and latest
+						{temporalRange.data ? `(${temporalRange.data.toDate})` : ''}
+						date of the analyzed images.
+					</Card.Content>
+				</Card.Root>
+				<!-- Total Observed Area -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Total Observed Area</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if totalObservedArea.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if totalObservedArea.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							{totalObservedArea.data} km²
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						The sum of processed clean-reflectance area over the entire temporal range
+					</Card.Content>
+				</Card.Root>
 			</Card.Content>
 		</Card.Root>
 
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Area of Interest</Card.Title>
-				<Card.Description>Shows the analysis area footprint</Card.Description>
-				<div class="relative">
-					<!-- Tailwind CSS classes to control the map's size -->
-					{#if taskAoiStatus === 'loading'}
-						<Skeleton class="w-full h-96" />
-					{:else}
-						<Map geoData={taskAoi} id="asd" />
-					{/if}
-				</div>
+				<Card.Title>Seasonal Report</Card.Title>
+				<Card.Description>Check out this line chart inside a card!</Card.Description>
 			</Card.Header>
-			<Card.Content>
-				<div class="grid gap-6">
-					<div class="grid gap-3"></div>
-				</div>
+			<Card.Content class="flex flex-row gap-4">
+				<!-- Season Graph -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Seasons Graph</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if ndviSeason.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if ndviSeason.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							<Chart
+								chartData={getNdviSeasonDataChartConfig(
+									ndviSeason.data.monthly_average.month,
+									ndviSeason.data.monthly_average.values
+								)}
+							/>
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						This chart visualizes the mean monthly green biomass coverage (NDVI scoring), indicating
+						the average vegetation activity for each month across the observation period. The
+						aggregation of NDVI measurements eliminates irregularities caused by annual variations,
+						providing a clear depiction of long-term monthly vegetation trends.
+					</Card.Content>
+				</Card.Root>
+				<!-- Season Text -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Season Recognition</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if ndviSeason.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if ndviSeason.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							<div class="text-4xl">
+								<span class="text-2xl text-muted-foreground">Recognized Seasons:</span>
+								<Separator class="my-4"></Separator>
+								<div class="font-bold align-middle">
+									{#each ndviSeason.data.seasons as season, index}
+										<span class="text-center">
+											{season.season_start_description}
+											-
+											{season.season_end_description}
+										</span>
+									{/each}
+								</div>
+							</div>
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Seasons are identified by weekly aggregated data, when vegetation activity stays above
+						average for at least 6 weeks, with allowances for brief gaps. These dates provide
+						insight into recurring vegetation cycles.
+					</Card.Content>
+				</Card.Root>
 			</Card.Content>
 		</Card.Root>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Area of Interest</Card.Title>
-				<Card.Description>Shows the analysis area footprint</Card.Description>
-				<div class="relative">
-					<!-- Tailwind CSS classes to control the map's size -->
-					{#if taskAoiStatus === 'loading'}
-						<Skeleton class="w-full h-96" />
-					{:else}
-						<SpatialAnalysisMap geoData={taskAoi} />
-					{/if}
-				</div>
-			</Card.Header>
-			<Card.Content>
-				<div class="grid gap-6">
-					<div class="grid gap-3"></div>
-				</div>
-			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Spatial Analysis</Card.Title>
-				<Card.Description>Shows the analysis area footprint</Card.Description>
-				<div class="relative">
-					<!-- Tailwind CSS classes to control the map's size -->
 
-					<SpatialAnalysisMap geoData={spatialAnalysisData} id="map2" />
-				</div>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Something</Card.Title>
+				<Card.Description>Check out this line chart inside a card!</Card.Description>
 			</Card.Header>
-			<Card.Content>
-				<div class="grid gap-6">
-					<div class="grid gap-3"></div>
-				</div>
+			<Card.Content class="flex flex-row gap-4">
+				<!-- Green Surface Biomass Heatmap -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Green Surface Biomass Heatmap</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if ndviHeatMap.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if ndviHeatMap.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							<SpatialAnalysisMap geoData={ndviHeatMap.data} />
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						The heatmap shows the aggregated spatial distribution of Green Surface Biomass (NDVI)
+						over the observation period. Each 100m x 100m cell calculates an NDVI score,
+						representing the normalized ratio of observed area to green surface biomass. This score
+						indicates the likelihood of any area within the cell being fully covered by vegetation
+						at any point.
+					</Card.Content>
+				</Card.Root>
+				<!-- IMAGE COUNT -->
+				<Card.Root class="flex flex-1 flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Image Count</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						{#if totalImageCount.status === 'loading'}
+							<LoaderCircle class="animate-spin" />
+						{:else if totalImageCount.status === 'error'}
+							<OctagonAlert />
+						{:else}
+							{totalImageCount.data}
+						{/if}
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Number of analyzed Images with at least partial cloud-free surface reflectance data
+					</Card.Content>
+				</Card.Root>
+			</Card.Content>
+		</Card.Root>
+
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Inspector</Card.Title>
+				<Card.Description>Check out this line chart inside a card!</Card.Description>
+			</Card.Header>
+			<Card.Content class="flex flex-row gap-4">
+				<!-- TASK -->
+				<Card.Root class="flex basis-3/4 flex-grow flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Image Count BIG</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						<InspectorMap
+							aoiData={{
+								name: $selectedTask.aoi.name,
+								geometry: $selectedTask.aoi.geometry
+							}}
+							recordData={inspectorData.data}
+						/>
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Number of analyzed Images with at least partial cloud-free surface reflectance data
+					</Card.Content>
+				</Card.Root>
+				<!-- IMAGE COUNT SMALL-->
+				<Card.Root class="flex basis-1/4 flex-grow flex-col justify-between">
+					<Card.Header>
+						<Card.Title>Image Count Small</Card.Title>
+					</Card.Header>
+					<Card.Content class="text-5xl font-bold">
+						<ScrollArea class="h-96 w-60 rounded-md border">
+							<div class="p-4">
+								<h4 class="mb-4 text-base font-medium leading-none">Available Dates</h4>
+								{#if availableDates.status === 'loading'}
+									<LoaderCircle class="animate-spin" />
+								{:else if availableDates.status === 'error'}
+									<OctagonAlert />
+								{:else}
+									{#each availableDates.data as availableDate}
+										<div class="text-sm font-mono front-medium">
+											<Button
+												disabled={inspectorData.status === 'loading'}
+												variant="ghost"
+												on:click={() => handleDateClick(availableDate)}
+											>
+												{availableDate}
+											</Button>
+										</div>
+										<Separator class="my-2" />
+									{/each}
+								{/if}
+							</div>
+						</ScrollArea>
+					</Card.Content>
+					<Card.Content class="text-muted-foreground text-xs">
+						Number of analyzed Images with at least partial cloud-free surface reflectance data
+					</Card.Content>
+				</Card.Root>
 			</Card.Content>
 		</Card.Root>
 	</div>
