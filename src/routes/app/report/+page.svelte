@@ -11,7 +11,6 @@
 	import { selectedTask } from '#app/stores';
 	import toast from 'svelte-french-toast';
 	import type { NDVIAreaData, NDVIDataPoint } from './types';
-	import { spatialAnalysisData } from './temp.ts';
 	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
 	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
 	import { calculateDateDifference } from './utils.ts';
@@ -589,12 +588,9 @@
 				<Card.Description>Check out this line chart inside a card!</Card.Description>
 			</Card.Header>
 			<Card.Content class="flex flex-row gap-4">
-				<!-- TASK -->
-				<Card.Root class="flex basis-3/4 flex-grow flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Image Count BIG</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
+				<!-- MAP -->
+				<Card.Root class="flex basis-5/6 flex-grow flex-col justify-between h-[600px]">
+					<div class="text-5xl font-bold h-full rounded-md border">
 						<InspectorMap
 							aoiData={{
 								name: $selectedTask.aoi.name,
@@ -602,45 +598,35 @@
 							}}
 							recordData={inspectorData.data}
 						/>
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Number of analyzed Images with at least partial cloud-free surface reflectance data
-					</Card.Content>
+					</div>
 				</Card.Root>
 				<!-- IMAGE COUNT SMALL-->
-				<Card.Root class="flex basis-1/4 flex-grow flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Image Count Small</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						<ScrollArea class="h-96 w-60 rounded-md border">
-							<div class="p-4">
-								<h4 class="mb-4 text-base font-medium leading-none">Available Dates</h4>
-								{#if availableDates.status === 'loading'}
-									<LoaderCircle class="animate-spin" />
-								{:else if availableDates.status === 'error'}
-									<OctagonAlert />
-								{:else}
-									{#each availableDates.data as availableDate}
-										<div class="text-sm font-mono front-medium">
-											<Button
-												disabled={inspectorData.status === 'loading'}
-												variant="ghost"
-												on:click={() => handleDateClick(availableDate)}
-											>
-												{availableDate}
-											</Button>
-										</div>
-										<Separator class="my-2" />
-									{/each}
-								{/if}
-							</div>
+				<div class="flex basis-1/6 flex-grow flex-col justify-between h-[600px]">
+					<div class="justify-items-center rounded-md border h-full p-4">
+						<h4 class="text-center mb-4 text-base font-medium leading-none">Available Dates</h4>
+						<ScrollArea class="h-[calc(100%-2rem)]">
+							{#if availableDates.status === 'loading'}
+								<LoaderCircle class="animate-spin h-full" />
+							{:else if availableDates.status === 'error'}
+								<OctagonAlert />
+							{:else}
+								{#each availableDates.data as availableDate}
+									<div class="flex flex-col items-center w-full text-sm font-mono">
+										<Button
+											class="w-full"
+											disabled={inspectorData.status === 'loading'}
+											variant="ghost"
+											on:click={() => handleDateClick(availableDate)}
+										>
+											{availableDate}
+										</Button>
+										<Separator class="my-2 w-full" />
+									</div>
+								{/each}
+							{/if}
 						</ScrollArea>
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Number of analyzed Images with at least partial cloud-free surface reflectance data
-					</Card.Content>
-				</Card.Root>
+					</div>
+				</div>
 			</Card.Content>
 		</Card.Root>
 	</div>
