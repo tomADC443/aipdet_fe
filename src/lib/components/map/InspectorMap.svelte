@@ -54,17 +54,21 @@
 				style: {
 					fillColor: COLOR.ndvi,
 					fillOpacity: 0.3,
-					opacity: 0,
-					stroke: false
+					opacity: 1,
+					stroke: true,
+					weight: 2,
+					color: COLOR.ndvi
 				}
 			}).addTo(map);
 
 			whcLayer = L.geoJSON(recordData.whc_areas, {
 				style: {
 					fillColor: COLOR.waterHyacinth,
+					color: COLOR.waterHyacinth,
 					fillOpacity: 0.3,
-					opacity: 0,
-					stroke: false
+					opacity: 1,
+					stroke: true,
+					weight: 2
 				}
 			}).addTo(map);
 		}
@@ -109,4 +113,4 @@
 	});
 </script>
 
-<div id="map" class="w-full h-96"></div>
+<div id="map" class="w-full h-full"></div>
