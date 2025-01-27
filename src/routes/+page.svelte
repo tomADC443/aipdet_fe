@@ -1,29 +1,188 @@
-<script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import authImage from '$lib/img/authimg_small.jpg';
+<script>
+	import { Button } from '$lib/components/ui/button/index';
+	import * as Card from '$lib/components/ui/card/index';
+	import spacex from '$lib/img/spacex.jpg';
+	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 </script>
 
-<main class="relative w-full h-screen overflow-hidden">
-	<!-- Background div for SVG -->
-	<div class="absolute inset-0 bg-muted">
-		<!-- Using Tailwind's utility classes to style the SVG as a background image -->
-
-		<div
-			class="h-full w-full bg-no-repeat bg-cover bg-center dark:brightness-[0.7]"
-			style="background-image: url('/src/lib/img/landingBackground.svg');"
-		></div>
-		<a
-			class="absolute right-2 bottom-2 opacity-20 text-xs"
-			href="https://www.vecteezy.com/free-vector/background">Background Vectors by Vecteezy</a
-		>
-	</div>
-	<div class="relative z-10 flex flex-col items-center justify-evenly h-full text-white">
-		<h1 class=" text-4xl font-semibold">
-			Real-Time Invasive Species Detection<br />for Water Resource Management
-		</h1>
-
-		<div>
-			<a href="/auth" class="text-white no-underline"><Button>Let's Go!</Button></a>
+<div class="flex flex-col items-center min-h-screen bg-[hsl(var(--background))] dark">
+	<!-- Header -->
+	<header class="w-full p-4 bg-[hsl(var(--card))] shadow-md fixed top-0 z-50">
+		<div class="container mx-auto flex items-center justify-between">
+			<h1 class="text-xl font-bold text-[hsl(var(--primary))]">AipDet</h1>
+			<nav>
+				<a
+					href="#features"
+					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Features</a
+				>
+				<a href="#about" class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]"
+					>About</a
+				>
+				<a
+					href="#contact"
+					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Contact</a
+				>
+				<a href="#demo" class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]"
+					>Demo</a
+				>
+			</nav>
 		</div>
-	</div>
-</main>
+	</header>
+	<!-- Hero Section -->
+	<!-- Hero Section -->
+	<section
+		class="relative flex flex-col items-center justify-center min-h-screen text-center w-full bg-cover bg-center"
+		style="background-image: url({spacex}); background-size: cover; background-position: center;"
+	>
+		<div class="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.5)]"></div>
+		<div
+			class="absolute z-10 bg-[hsl(var(--card))]/60 px-10 py-14 rounded-xl backdrop-blur-md"
+			style="backdrop-filter: blur(4px);"
+		>
+			<h2 class="text-4xl font-extrabold text-[hsl(var(--primary))] mb-4">
+				Unlock Insights From Space
+			</h2>
+			<p class="text-lg text-[hsl(var(--foreground))] mb-6">
+				Insights You Can Trust for Sustainable Freshwater Management
+			</p>
+			<a href="/auth"><Button variant="default" size="lg">Get Started!</Button></a>
+		</div>
+		<div class="absolute bottom-10 flex justify-center w-full">
+			<ChevronDown class="text-[hsl(var(--primary))] w-8 h-8 animate-bounce" />
+		</div>
+	</section>
+
+	<!-- Features Section -->
+	<section id="features" class="container mx-auto py-12 min-h-screen flex flex-col justify-center">
+		<h3 class="text-3xl font-bold text-center text-[hsl(var(--foreground))] mb-8">Features</h3>
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+			<Card.Root class="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+				<Card.Header>
+					<Card.Title>Comprehensive Analysis Tools</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p>
+						Our platform delivers temporal and spatial assessments using indices like NDVI, allowing
+						you to gain valuable insights into vegetation health and growth patterns.
+					</p>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root class="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+				<Card.Header>
+					<Card.Title>Hotspot Detection</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p>
+						Identify areas with concentrated green surface biomass for targeted management of Water
+						Hyacinth infestations.
+					</p>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root class="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+				<Card.Header>
+					<Card.Title>Interactive Mapping and Dashboards</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p>
+						Visualize spatial insights on interactive maps and monitor results in an intuitive
+						dashboard designed for actionable insights.
+					</p>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root class="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+				<Card.Header>
+					<Card.Title>Growth Trends and Seasonal Insights</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p>
+						Track changes in surface area, growth rates, and vegetation distribution over time with
+						season analytics.
+					</p>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root class="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+				<Card.Header>
+					<Card.Title>Powered by Satellite Data</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p>
+						Leverage the high-resolution, multi-spectral imagery from ESA’s Sentinel-2 mission for
+						accurate and reliable results.
+					</p>
+				</Card.Content>
+			</Card.Root>
+		</div>
+	</section>
+
+	<!-- Demo Section -->
+	<section id="demo" class="py-12 min-h-screen flex flex-col justify-center bg-[hsl(var(--card))]">
+		<div class="container mx-auto text-center">
+			<h3 class="text-3xl font-bold text-[hsl(var(--foreground))] mb-6">Demo</h3>
+			<p class="text-[hsl(var(--muted-foreground))] mb-6">
+				Explore our platform through these public dashboards to get an impression of its
+				capabilities without creating an account.
+			</p>
+			<div class="flex flex-col space-y-4">
+				<a
+					href="https://dashboard1.example.com"
+					class="text-lg text-[hsl(var(--primary))] hover:underline"
+					target="_blank"
+					rel="noopener noreferrer">Public Dashboard 1</a
+				>
+				<a
+					href="https://dashboard2.example.com"
+					class="text-lg text-[hsl(var(--primary))] hover:underline"
+					target="_blank"
+					rel="noopener noreferrer">Public Dashboard 2</a
+				>
+				<a
+					href="https://dashboard3.example.com"
+					class="text-lg text-[hsl(var(--primary))] hover:underline"
+					target="_blank"
+					rel="noopener noreferrer">Public Dashboard 3</a
+				>
+			</div>
+		</div>
+	</section>
+
+	<!-- Contact Section -->
+	<section id="contact" class="py-12 min-h-screen flex flex-col justify-center">
+		<div class="container mx-auto text-center">
+			<h3 class="text-3xl font-bold text-[hsl(var(--foreground))] mb-6">Contact Us</h3>
+			<p class="text-[hsl(var(--muted-foreground))] mb-4">
+				Have questions or want to learn more? Reach out to us!
+			</p>
+			<Button
+				size="lg"
+				class="bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary-foreground))]"
+				>Email Us</Button
+			>
+		</div>
+	</section>
+
+	<!-- About Section -->
+	<section
+		id="about"
+		class="bg-[hsl(var(--muted))] py-12 min-h-screen flex flex-col justify-center"
+	>
+		<div class="container mx-auto text-center">
+			<h3 class="text-3xl font-bold text-[hsl(var(--foreground))] mb-6">About Us</h3>
+			<p class="text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
+				AipDet is passionate about empowering freshwater ecosystem management through innovative
+				geospatial technologies. Leveraging cutting-edge satellite data and powerful analysis tools,
+				we aim to help stakeholders combat the growing challenges posed by invasive species like
+				Water Hyacinth. Our mission is to provide actionable insights that enable smarter decisions,
+				promote sustainability, and preserve the health of freshwater ecosystems worldwide.
+			</p>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer class="w-full bg-[hsl(var(--card))] shadow-inner py-4">
+		<div class="container mx-auto text-center">
+			<p class="text-sm text-[hsl(var(--muted-foreground))]">
+				&copy; 2025 AipDet. All rights reserved.
+			</p>
+		</div>
+	</footer>
+</div>
