@@ -16,12 +16,12 @@
 	export let handleDateClick: (dateString: string) => Promise<void>;
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4">
-	<Card.Root class="col-span-6 flex flex-col justify-between h-[600px]">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 w-full">
+	<Card.Root class="col-span-6 flex flex-col justify-between">
 		<Card.Header>
 			<Card.Title>Name</Card.Title>
 		</Card.Header>
-		<Card.Content class="text-4xl font-bold">
+		<Card.Content class="text-4xl font-bold  h-[600px]">
 			<InspectorMap
 				aoiData={{
 					name: selectedTask.aoi.name,

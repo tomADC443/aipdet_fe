@@ -44,7 +44,7 @@
 			observedLayer = L.geoJSON(recordData.observed_areas, {
 				style: {
 					fillColor: COLOR.brightGreenPrimary,
-					fillOpacity: 0.1,
+					fillOpacity: 0.4,
 					opacity: 0,
 					stroke: false
 				}
@@ -113,4 +113,4 @@
 	});
 </script>
 
-<div id="map" class="w-full h-full"></div>
+<div id="map" class=" rounded-lg border shadow-sm w-full h-full"></div>
