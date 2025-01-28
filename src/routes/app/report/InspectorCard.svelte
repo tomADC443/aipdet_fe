@@ -9,20 +9,51 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import type { DashboardFetchData } from './types';
 	import type { Task } from '#routes/app/task/types';
+	import { COLOR } from './constants';
 
 	export let selectedTask: Task;
 	export let inspectorData: DashboardFetchData;
 	export let availableDates: DashboardFetchData;
 	export let handleDateClick: (dateString: string) => Promise<void>;
+
+	let selectedDateString = 'None';
+	$: selectedDateString =
+		inspectorData && inspectorData.data ? inspectorData.data.dateString : 'None';
+	let showObservedLayer = true;
+	let showNdviLayer = true;
+	let showWhcLayer = true;
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 w-full">
 	<Card.Root class="col-span-6 flex flex-col justify-between h-[800px]">
-		<Card.Header>
-			<Card.Title>Name</Card.Title>
+		<Card.Header class="flex flex-row justify-between items-center">
+			<Card.Title>Date Selected: {selectedDateString}</Card.Title>
+			<div>
+				<Button
+					class="bg-[hsl(var(--primary))]/40"
+					variant="ghost"
+					on:click={() => (showObservedLayer = !showObservedLayer)}
+					>Observed Area
+				</Button>
+
+				<Button
+					class="bg-[hsl(var(--biomass))]/40 "
+					variant="ghost"
+					on:click={() => (showNdviLayer = !showNdviLayer)}>Biomass</Button
+				>
+
+				<Button
+					class="bg-[hsl(var(--waterHyacinth))]/40"
+					variant="ghost"
+					on:click={() => (showWhcLayer = !showWhcLayer)}>Water Hyacinth</Button
+				>
+			</div>
 		</Card.Header>
 		<Card.Content class="text-4xl font-bold h-full">
 			<InspectorMap
+				{showObservedLayer}
+				{showNdviLayer}
+				{showWhcLayer}
 				aoiData={{
 					name: selectedTask.aoi.name,
 					geometry: selectedTask.aoi.geometry
@@ -30,6 +61,7 @@
 				recordData={inspectorData.data}
 			/>
 		</Card.Content>
+
 		<Card.Content class="text-muted-foreground text-xs">Some description here</Card.Content>
 	</Card.Root>
 
