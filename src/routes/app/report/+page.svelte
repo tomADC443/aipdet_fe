@@ -1,23 +1,21 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index';
-	import type { Feature, Polygon } from 'geojson';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import * as Card from '$lib/components/ui/card/index';
-	import Map from '$lib/components/map/Map.svelte';
 	import Chart from '$lib/components/chart/Chart.svelte';
 	import type { ChartConfiguration } from 'chart.js';
 	import { onMount } from 'svelte';
 	import { selectedTask } from '#app/stores';
 	import toast from 'svelte-french-toast';
-	import type { NDVIAreaData, NDVIDataPoint } from './types';
 	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
 	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
 	import { calculateDateDifference } from './utils.ts';
-	import Label from '$lib/components/ui/label/label.svelte';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import TaskCards from './TaskCards.svelte';
+	import SeasonCards from './SeasonCards.svelte';
+	import InspectorCard from './InspectorCard.svelte';
 
 	type DashboardFetchData = {
 		status: 'loading' | 'error' | 'success';
@@ -52,7 +50,7 @@
 		data: null
 	};
 
-	async function handleDateClick(dateString: string) {
+	async function handleDateClick(dateString: string): Promise<void> {
 		if (!$selectedTask) return;
 		inspectorData = {
 			status: 'loading',
@@ -379,256 +377,29 @@
 </script>
 
 {#if $selectedTask}
-	<div class="mx-auto grid flex-1 auto-rows-max gap-4">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>General INFO</Card.Title>
-				<Card.Description>Check out this line chart inside a card!</Card.Description>
-			</Card.Header>
-			<Card.Content class="flex flex-row gap-4">
-				<!-- TASK -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Task</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{$selectedTask.name}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Created {new Date($selectedTask.createdAt * 1000).toDateString()}
-					</Card.Content>
-				</Card.Root>
-				<!-- IMAGE COUNT -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Image Count</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if totalImageCount.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if totalImageCount.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							{totalImageCount.data}
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Number of analyzed Images with at least partial cloud-free surface reflectance data
-					</Card.Content>
-				</Card.Root>
-				<!-- Temporal Range -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Temporal Range</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if temporalRange.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if temporalRange.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							<div class="pb-2">
-								{calculateDateDifference(temporalRange.data.fromDate, temporalRange.data.toDate)
-									.years} Years
-							</div>
-							<div class="overline">
-								{calculateDateDifference(temporalRange.data.fromDate, temporalRange.data.toDate)
-									.months} Months
-							</div>
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Difference between the earliest
-						{temporalRange.data ? `(${temporalRange.data.fromDate})` : ''}
-						and latest
-						{temporalRange.data ? `(${temporalRange.data.toDate})` : ''}
-						date of the analyzed images.
-					</Card.Content>
-				</Card.Root>
-				<!-- Total Observed Area -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Total Observed Area</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if totalObservedArea.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if totalObservedArea.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							{totalObservedArea.data} km²
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						The sum of processed clean-reflectance area over the entire temporal range
-					</Card.Content>
-				</Card.Root>
-			</Card.Content>
-		</Card.Root>
+	<div class="flex flex-col auto-rows-max items-start gap-4 lg:gap-8">
+		<h1 class="text-lg font-semibold md:text-2xl">Reports</h1>
+		<Separator />
 
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Seasonal Report</Card.Title>
-				<Card.Description>Check out this line chart inside a card!</Card.Description>
-			</Card.Header>
-			<Card.Content class="flex flex-row gap-4">
-				<!-- Season Graph -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Seasons Graph</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if ndviSeason.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if ndviSeason.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							<Chart
-								chartData={getNdviSeasonDataChartConfig(
-									ndviSeason.data.monthly_average.month,
-									ndviSeason.data.monthly_average.values
-								)}
-							/>
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						This chart visualizes the mean monthly green biomass coverage (NDVI scoring), indicating
-						the average vegetation activity for each month across the observation period. The
-						aggregation of NDVI measurements eliminates irregularities caused by annual variations,
-						providing a clear depiction of long-term monthly vegetation trends.
-					</Card.Content>
-				</Card.Root>
-				<!-- Season Text -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Season Recognition</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if ndviSeason.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if ndviSeason.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							<div class="text-4xl">
-								<span class="text-2xl text-muted-foreground">Recognized Seasons:</span>
-								<Separator class="my-4"></Separator>
-								<div class="font-bold align-middle">
-									{#each ndviSeason.data.seasons as season, index}
-										<span class="text-center">
-											{season.season_start_description}
-											-
-											{season.season_end_description}
-										</span>
-									{/each}
-								</div>
-							</div>
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Seasons are identified by weekly aggregated data, when vegetation activity stays above
-						average for at least 6 weeks, with allowances for brief gaps. These dates provide
-						insight into recurring vegetation cycles.
-					</Card.Content>
-				</Card.Root>
-			</Card.Content>
-		</Card.Root>
-
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Something</Card.Title>
-				<Card.Description>Check out this line chart inside a card!</Card.Description>
-			</Card.Header>
-			<Card.Content class="flex flex-row gap-4">
-				<!-- Green Surface Biomass Heatmap -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Green Surface Biomass Heatmap</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if ndviHeatMap.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if ndviHeatMap.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							<SpatialAnalysisMap geoData={ndviHeatMap.data} />
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						The heatmap shows the aggregated spatial distribution of Green Surface Biomass (NDVI)
-						over the observation period. Each 100m x 100m cell calculates an NDVI score,
-						representing the normalized ratio of observed area to green surface biomass. This score
-						indicates the likelihood of any area within the cell being fully covered by vegetation
-						at any point.
-					</Card.Content>
-				</Card.Root>
-				<!-- IMAGE COUNT -->
-				<Card.Root class="flex flex-1 flex-col justify-between">
-					<Card.Header>
-						<Card.Title>Image Count</Card.Title>
-					</Card.Header>
-					<Card.Content class="text-5xl font-bold">
-						{#if totalImageCount.status === 'loading'}
-							<LoaderCircle class="animate-spin" />
-						{:else if totalImageCount.status === 'error'}
-							<OctagonAlert />
-						{:else}
-							{totalImageCount.data}
-						{/if}
-					</Card.Content>
-					<Card.Content class="text-muted-foreground text-xs">
-						Number of analyzed Images with at least partial cloud-free surface reflectance data
-					</Card.Content>
-				</Card.Root>
-			</Card.Content>
-		</Card.Root>
-
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Inspector</Card.Title>
-				<Card.Description>Check out this line chart inside a card!</Card.Description>
-			</Card.Header>
-			<Card.Content class="flex flex-row gap-4">
-				<!-- MAP -->
-				<Card.Root class="flex basis-5/6 flex-grow flex-col justify-between h-[600px]">
-					<div class="text-5xl font-bold h-full rounded-md border">
-						<InspectorMap
-							aoiData={{
-								name: $selectedTask.aoi.name,
-								geometry: $selectedTask.aoi.geometry
-							}}
-							recordData={inspectorData.data}
-						/>
-					</div>
-				</Card.Root>
-				<!-- IMAGE COUNT SMALL-->
-				<div class="flex basis-1/6 flex-grow flex-col justify-between h-[600px]">
-					<div class="justify-items-center rounded-md border h-full p-4">
-						<h4 class="text-center mb-4 text-base font-medium leading-none">Available Dates</h4>
-						<ScrollArea class="h-[calc(100%-2rem)]">
-							{#if availableDates.status === 'loading'}
-								<LoaderCircle class="animate-spin h-full" />
-							{:else if availableDates.status === 'error'}
-								<OctagonAlert />
-							{:else}
-								{#each availableDates.data as availableDate}
-									<div class="flex flex-col items-center w-full text-sm font-mono">
-										<Button
-											class="w-full"
-											disabled={inspectorData.status === 'loading'}
-											variant="ghost"
-											on:click={() => handleDateClick(availableDate)}
-										>
-											{availableDate}
-										</Button>
-										<Separator class="my-2 w-full" />
-									</div>
-								{/each}
-							{/if}
-						</ScrollArea>
-					</div>
-				</div>
-			</Card.Content>
-		</Card.Root>
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
+		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<TaskCards selectedTask={$selectedTask} {totalImageCount} {temporalRange} {totalObservedArea} />
+		<Separator />
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Inspector</h2>
+		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<InspectorCard
+			selectedTask={$selectedTask}
+			{handleDateClick}
+			{inspectorData}
+			{availableDates}
+		/>
+		<Separator />
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
+		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<SeasonCards {ndviSeason} />
+		<Separator />
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Inspector</h2>
+		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
 	</div>
 {:else}
 	<div class="flex items-center">

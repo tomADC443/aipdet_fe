@@ -17,11 +17,11 @@
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 w-full">
-	<Card.Root class="col-span-6 flex flex-col justify-between">
+	<Card.Root class="col-span-6 flex flex-col justify-between h-[800px]">
 		<Card.Header>
 			<Card.Title>Name</Card.Title>
 		</Card.Header>
-		<Card.Content class="text-4xl font-bold  h-[600px]">
+		<Card.Content class="text-4xl font-bold h-full">
 			<InspectorMap
 				aoiData={{
 					name: selectedTask.aoi.name,
@@ -33,7 +33,7 @@
 		<Card.Content class="text-muted-foreground text-xs">Some description here</Card.Content>
 	</Card.Root>
 
-	<div class="col-span-1 justify-items-center rounded-md border h-full p-4 max-h-[600px]">
+	<div class="col-span-1 justify-items-center rounded-md border h-full p-4 max-h-[800px]">
 		<h4 class="text-center mb-4 text-base font-medium leading-none">Available Dates</h4>
 		<ScrollArea class="h-[calc(100%-2rem)]">
 			{#if availableDates.status === 'loading'}
