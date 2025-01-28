@@ -17,6 +17,9 @@
 
 	export let aoiData: inspectorAoiData;
 	export let recordData: inspectorRecordData;
+	export let showObservedLayer: boolean = true;
+	export let showNdviLayer: boolean = true;
+	export let showWhcLayer: boolean = true;
 
 	let map: L.Map;
 	let observedLayer: L.GeoJSON | null = null;
@@ -39,43 +42,49 @@
 			whcLayer = null;
 		}
 
-		// Add new layers if recordData exists
+		// Add new layers if recordData exists and props are true
 		if (recordData && map) {
-			observedLayer = L.geoJSON(recordData.observed_areas, {
-				style: {
-					fillColor: COLOR.brightGreenPrimary,
-					fillOpacity: 0.4,
-					opacity: 0,
-					stroke: false
-				}
-			}).addTo(map);
+			if (showObservedLayer) {
+				observedLayer = L.geoJSON(recordData.observed_areas, {
+					style: {
+						fillColor: COLOR.observed.color,
+						fillOpacity: COLOR.observed.opacity,
+						opacity: 0,
+						stroke: false
+					}
+				}).addTo(map);
+			}
 
-			ndviLayer = L.geoJSON(recordData.ndvi_areas, {
-				style: {
-					fillColor: COLOR.ndvi,
-					fillOpacity: 0.3,
-					opacity: 1,
-					stroke: true,
-					weight: 2,
-					color: COLOR.ndvi
-				}
-			}).addTo(map);
+			if (showNdviLayer) {
+				ndviLayer = L.geoJSON(recordData.ndvi_areas, {
+					style: {
+						fillColor: COLOR.ndvi.color,
+						fillOpacity: COLOR.ndvi.opacity,
+						opacity: 1,
+						stroke: true,
+						weight: 2,
+						color: COLOR.ndvi.color
+					}
+				}).addTo(map);
+			}
 
-			whcLayer = L.geoJSON(recordData.whc_areas, {
-				style: {
-					fillColor: COLOR.waterHyacinth,
-					color: COLOR.waterHyacinth,
-					fillOpacity: 0.3,
-					opacity: 1,
-					stroke: true,
-					weight: 2
-				}
-			}).addTo(map);
+			if (showWhcLayer) {
+				whcLayer = L.geoJSON(recordData.whc_areas, {
+					style: {
+						fillColor: COLOR.waterHyacinth.color,
+						color: COLOR.waterHyacinth.color,
+						fillOpacity: COLOR.waterHyacinth.opacity,
+						opacity: 1,
+						stroke: true,
+						weight: 2
+					}
+				}).addTo(map);
+			}
 		}
 	}
 
 	// Watch for changes in recordData
-	$: if (map && recordData !== undefined) {
+	$: if ((map && recordData !== undefined) || showObservedLayer || showNdviLayer || showWhcLayer) {
 		updateLayers();
 	}
 
