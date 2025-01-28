@@ -71,10 +71,7 @@
 	}
 </script>
 
-<Card.Root
-	data-x-chunk-name="dashboard-05-chunk-3"
-	data-x-chunk-description="A table of recent tasks showing the following columns: Customer, Type, Status, Date, and Amount."
->
+<Card.Root>
 	<Card.Header class="px-7">
 		<Card.Title>Your Processed Areas</Card.Title>
 		<Card.Description>List of all of your areas.</Card.Description>
