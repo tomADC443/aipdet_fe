@@ -7,6 +7,8 @@
 	import toast from 'svelte-french-toast';
 	import { onMount } from 'svelte';
 
+	import { Content } from '$lib/components/ui/accordion';
+
 	onMount(() => {
 		fetchTasks();
 	});
@@ -46,30 +48,29 @@
 	}
 </script>
 
-<div class="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
-	<div class="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-		<!-- <div class="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8"> -->
-		<div class="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Tasks</Card.Title>
-					<Card.Description
-						>Add the name and description of the new Area Of Interest (AOI).</Card.Description
-					>
-					<div class="ml-auto mr-4">
-						<a href="/app/task/create">
-							<Button>
-								<Plus class="mr-2 h-4 w-4" />
-								Add Task
-							</Button>
-						</a>
-					</div>
-				</Card.Header>
-				<Card.Content>
-					<div class="grid gap-6"></div>
-				</Card.Content>
-			</Card.Root>
-			<TaskTable {tasks} />
-		</div>
-	</div>
+<div class="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8 flex-wrap">
+	<h1 class="text-lg font-semibold md:text-2xl">Tasks</h1>
+	<Card.Root>
+		<Card.Header>
+			<div class=" flex flex-row justify-between items-center pb-6">
+				<div>
+					<Card.Title class="pb-2">Create a Task</Card.Title>
+					<Card.Description>
+						By creating a Task you initiate the process of analyzing a specified Area of Interest.
+						When the Task is completed you can see the results of the Analysis in the 'Reports'
+						section.
+					</Card.Description>
+				</div>
+
+				<a href="/app/aoi/create">
+					<Button class="w-64">
+						<Plus class="mr-2 h-4 w-4" />
+						Add AOI
+					</Button></a
+				>
+			</div>
+		</Card.Header>
+	</Card.Root>
+
+	<TaskTable {tasks} />
 </div>
