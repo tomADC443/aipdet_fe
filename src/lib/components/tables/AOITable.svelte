@@ -5,10 +5,9 @@
 	import toast from 'svelte-french-toast';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
-
+	import Plus from 'lucide-svelte/icons/plus';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { formatUnixTimestampToLocalTime } from '#routes/app/utils';
-
 	let aois: AOI[] = [];
 	let status: 'loading' | 'success' | 'empty' | 'error' = 'loading';
 	onMount(() => {
@@ -94,7 +93,6 @@
 	<Card.Root>
 		<Card.Header class="px-7">
 			<Card.Title>Your Areas of Interest</Card.Title>
-			<Card.Description>List of all of your areas.</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<Table.Root>
