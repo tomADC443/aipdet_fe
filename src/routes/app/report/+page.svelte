@@ -1,21 +1,15 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index';
-	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
-	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
-	import * as Card from '$lib/components/ui/card/index';
-	import Chart from '$lib/components/chart/Chart.svelte';
 	import type { ChartConfiguration } from 'chart.js';
 	import { onMount } from 'svelte';
 	import { selectedTask } from '#app/stores';
 	import toast from 'svelte-french-toast';
-	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
-	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
-	import { calculateDateDifference } from './utils.ts';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import TaskCards from './TaskCards.svelte';
 	import SeasonCards from './SeasonCards.svelte';
 	import InspectorCard from './InspectorCard.svelte';
+	import SpatialDistributionHeatMapCard from './SpatialDistributionHeatMapCard.svelte';
+	import GrowthRatesCard from './GrowthRatesCard.svelte';
 
 	type DashboardFetchData = {
 		status: 'loading' | 'error' | 'success';
@@ -398,8 +392,18 @@
 		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
 		<SeasonCards {ndviSeason} />
 		<Separator />
-		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Inspector</h2>
-		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Growth Rate Patterns</h2>
+		<p class="text-muted-foreground">Some info here</p>
+		<GrowthRatesCard {ndviSeason} />
+		<Separator />
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Spatial Insights</h2>
+		<p class="text-muted-foreground">
+			The heatmap shows the aggregated spatial distribution of Green Surface Biomass (NDVI) over the
+			observation period. Each 100m x 100m cell calculates an NDVI score, representing the
+			normalized ratio of observed area to green surface biomass. This score indicates the
+			likelihood of any area within the cell being fully covered by vegetation at any point.
+		</p>
+		<SpatialDistributionHeatMapCard {ndviHeatMap} />
 	</div>
 {:else}
 	<div class="flex items-center">
