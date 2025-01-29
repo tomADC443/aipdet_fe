@@ -24,26 +24,32 @@
 	let showWhcLayer = true;
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 w-full">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 w-full z-0">
 	<Card.Root class="col-span-6 flex flex-col justify-between h-[800px]">
 		<Card.Header class="flex flex-row justify-between items-center">
 			<Card.Title>Date Selected: {selectedDateString}</Card.Title>
 			<div>
 				<Button
-					class="bg-[hsl(var(--primary))]/40"
+					class={`
+						${showObservedLayer ? 'bg-[hsl(var(--primary))]/40' : 'bg-gray-200 text-gray-500 opacity-50'}
+					  `}
 					variant="ghost"
 					on:click={() => (showObservedLayer = !showObservedLayer)}
 					>Observed Area
 				</Button>
 
 				<Button
-					class="bg-[hsl(var(--biomass))]/40 "
+					class={`
+						${showNdviLayer ? 'bg-[hsl(var(--biomass))]/40' : 'bg-gray-200 text-gray-500 opacity-50'}
+					  `}
 					variant="ghost"
 					on:click={() => (showNdviLayer = !showNdviLayer)}>Biomass</Button
 				>
 
 				<Button
-					class="bg-[hsl(var(--waterHyacinth))]/40"
+					class={`
+						${showWhcLayer ? 'bg-[hsl(var(--waterHyacinth))]/40' : 'bg-gray-200 text-gray-500 opacity-50'}
+					  `}
 					variant="ghost"
 					on:click={() => (showWhcLayer = !showWhcLayer)}>Water Hyacinth</Button
 				>
