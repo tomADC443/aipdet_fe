@@ -314,60 +314,6 @@
 			};
 		}
 	}
-
-	// async function fetchNdviAreaData(taskId: string) {
-	// 	try {
-	// 		const response = await fetch(
-	// 			`${import.meta.env.VITE_BASE_URL_API}/api/report/ndvi-area-data?taskId=${taskId}`,
-	// 			{
-	// 				method: 'GET',
-	// 				credentials: 'include',
-	// 				headers: {
-	// 					'Content-Type': 'application/json',
-	// 					Connection: 'keep-alive'
-	// 				}
-	// 			}
-	// 		);
-	// 		const data = (await response.json()) as NDVIAreaData;
-
-	// 		if (response.ok && data) {
-	// 			taskAoiStatus = 'success';
-
-	// 			ndviAreaDataStatus = 'success';
-	// 			ndviAreaData = data;
-
-	// 			ndviAreaChartData = {
-	// 				type: 'line',
-	// 				data: {
-	// 					labels: data.map((datapoint: NDVIDataPoint) => datapoint.date),
-	// 					datasets: [
-	// 						{
-	// 							label: 'Example Data',
-	// 							data: data.map((datapoint: NDVIDataPoint) => datapoint.value),
-	// 							fill: false,
-	// 							borderColor: 'rgb(75, 192, 192)'
-	// 						}
-	// 					]
-	// 				},
-	// 				options: {
-	// 					responsive: true
-	// 				}
-	// 			};
-
-	// 			return;
-	// 		} else {
-	// 			ndviAreaDataStatus = 'error';
-
-	// 			toast.error('Failed to get Biomass area data. Try again Later.');
-	// 			console.error('Biomass area data Response not ok:', response.body);
-	// 		}
-	// 	} catch (error) {
-	// 		ndviAreaDataStatus = 'error';
-
-	// 		toast.error('Failed to get Biomass area data. Try again Later.');
-	// 		console.error('Failed to get Biomass area data', error);
-	// 	}
-	// }
 </script>
 
 {#if $selectedTask}
