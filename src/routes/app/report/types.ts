@@ -9,3 +9,4 @@ export type DashboardFetchData = {
     data: any | null;
 };
 export type NDVIAreaData = NDVIDataPoint[];
+export type FeaturedLayer = 'NDVI' | 'WHC';

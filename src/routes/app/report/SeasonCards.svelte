@@ -1,19 +1,10 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import * as Card from '$lib/components/ui/card/index';
 	import Chart from '$lib/components/chart/Chart.svelte';
 	import type { ChartConfiguration } from 'chart.js';
-	import { onMount } from 'svelte';
-	import { selectedTask } from '#app/stores';
-	import toast from 'svelte-french-toast';
-	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
-	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
-	import { calculateDateDifference } from './utils.ts';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-	import TaskCards from './TaskCards.svelte';
 	import type { DashboardFetchData } from './types';
 
 	export let ndviSeason: DashboardFetchData;
