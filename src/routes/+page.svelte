@@ -114,37 +114,6 @@
 		</div>
 	</section>
 
-	<!-- Demo Section -->
-	<section id="demo" class="py-12 min-h-screen flex flex-col justify-center bg-[hsl(var(--card))]">
-		<div class="container mx-auto text-center">
-			<h3 class="text-3xl font-bold text-[hsl(var(--foreground))] mb-6">Demo</h3>
-			<p class="text-[hsl(var(--muted-foreground))] mb-6">
-				Explore our platform through these public dashboards to get an impression of its
-				capabilities without creating an account.
-			</p>
-			<div class="flex flex-col space-y-4">
-				<a
-					href="https://dashboard1.example.com"
-					class="text-lg text-[hsl(var(--primary))] hover:underline"
-					target="_blank"
-					rel="noopener noreferrer">Public Dashboard 1</a
-				>
-				<a
-					href="https://dashboard2.example.com"
-					class="text-lg text-[hsl(var(--primary))] hover:underline"
-					target="_blank"
-					rel="noopener noreferrer">Public Dashboard 2</a
-				>
-				<a
-					href="https://dashboard3.example.com"
-					class="text-lg text-[hsl(var(--primary))] hover:underline"
-					target="_blank"
-					rel="noopener noreferrer">Public Dashboard 3</a
-				>
-			</div>
-		</div>
-	</section>
-
 	<!-- Contact Section -->
 	<section id="contact" class="py-12 min-h-screen flex flex-col justify-center">
 		<div class="container mx-auto text-center">
@@ -152,28 +121,7 @@
 			<p class="text-[hsl(var(--muted-foreground))] mb-4">
 				Have questions or want to learn more? Reach out to us!
 			</p>
-			<Button
-				size="lg"
-				class="bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary-foreground))]"
-				>Email Us</Button
-			>
-		</div>
-	</section>
-
-	<!-- About Section -->
-	<section
-		id="about"
-		class="bg-[hsl(var(--muted))] py-12 min-h-screen flex flex-col justify-center"
-	>
-		<div class="container mx-auto text-center">
-			<h3 class="text-3xl font-bold text-[hsl(var(--foreground))] mb-6">About Us</h3>
-			<p class="text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
-				AipDet is passionate about empowering freshwater ecosystem management through innovative
-				geospatial technologies. Leveraging cutting-edge satellite data and powerful analysis tools,
-				we aim to help stakeholders combat the growing challenges posed by invasive species like
-				Water Hyacinth. Our mission is to provide actionable insights that enable smarter decisions,
-				promote sustainability, and preserve the health of freshwater ecosystems worldwide.
-			</p>
+			<a href="mailto:tom@tpl.dev"> <Button variant="default">Email Us</Button></a>
 		</div>
 	</section>
 
