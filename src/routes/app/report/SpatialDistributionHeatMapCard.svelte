@@ -5,9 +5,28 @@
 	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
 	import type { DashboardFetchData, FeaturedLayer } from './types.ts';
 	import { Button } from '$lib/components/ui/button/index';
+	import { onMount } from 'svelte';
+	import type { FeatureCollection } from 'geojson';
+	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
+	import toast from 'svelte-french-toast';
 
-	export let ndviHeatMap: DashboardFetchData;
+	export let taskId: string;
 
+	type NdviHeatMapData = FeatureCollection;
+	let ndviHeatMap: DashboardFetchData<NdviHeatMapData> = {
+		status: 'loading',
+		data: null
+	};
+
+	onMount(async () => {
+		ndviHeatMap = await authenticatedBackendFetch<NdviHeatMapData>(
+			`report/spatial-analysis?taskId=${taskId}`,
+			'GET'
+		);
+		if (ndviHeatMap.status === 'error') {
+			toast.error(`Heatmap: ${getErrorCodeText(ndviHeatMap.errorCode)}`);
+		}
+	});
 	let featuredLayer: FeaturedLayer = 'NDVI';
 </script>
 
@@ -30,10 +49,10 @@
 		<Card.Content class="text-4xl font-bold h-full w-full">
 			{#if ndviHeatMap.status === 'loading'}
 				<LoaderCircle class="animate-spin w-full h-full" />
-			{:else if ndviHeatMap.status === 'error'}
-				<OctagonAlert />
-			{:else}
+			{:else if ndviHeatMap.data && ndviHeatMap.status === 'success'}
 				<SpatialAnalysisMap geoData={ndviHeatMap.data} {featuredLayer} />
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 

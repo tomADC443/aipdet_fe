@@ -1,14 +1,31 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import * as Card from '$lib/components/ui/card/index';
 	import Chart from '$lib/components/chart/Chart.svelte';
 	import type { ChartConfiguration } from 'chart.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
+	import { onMount } from 'svelte';
+	import type { SeasonAnalysisData } from './types';
 	import type { DashboardFetchData } from './types';
+	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
+	import toast from 'svelte-french-toast';
 
-	export let ndviSeason: DashboardFetchData;
+	export let taskId: string;
+
+	let growthRatesAnalysis: DashboardFetchData<SeasonAnalysisData> = {
+		status: 'loading',
+		data: null
+	};
+	onMount(async () => {
+		growthRatesAnalysis = await authenticatedBackendFetch<SeasonAnalysisData>(
+			`report/spatial-analysis?taskId=${taskId}`,
+			'GET'
+		);
+		if (growthRatesAnalysis.status === 'error') {
+			toast.error(`Heatmap: ${getErrorCodeText(growthRatesAnalysis.errorCode)}`);
+		}
+	});
 
 	function getGrowthRateLineChartConfig(labels: string[], data: number[]): ChartConfiguration {
 		return {
@@ -38,17 +55,23 @@
 			<Card.Title>Seasons Graph</Card.Title>
 		</Card.Header>
 		<Card.Content class="min-h-72 w-full text-4xl font-bold">
-			{#if ndviSeason.status === 'loading'}
+			{#if growthRatesAnalysis.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if ndviSeason.status === 'error'}
-				<OctagonAlert />
-			{:else}
+			{:else if growthRatesAnalysis.data && growthRatesAnalysis.status === 'success'}
 				<Chart
 					chartData={getGrowthRateLineChartConfig(
-						ndviSeason.data.growthRates.weekly_changes.weeks,
-						ndviSeason.data.growthRates.weekly_changes.values
+						growthRatesAnalysis.data.growthRates.weekly_changes.weeks.map(String),
+						growthRatesAnalysis.data.growthRates.weekly_changes.values.map((item) => {
+							if (item != null) {
+								return Number(item);
+							} else {
+								return 0;
+							}
+						})
 					)}
 				/>
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">SOME text here</Card.Content>
@@ -59,16 +82,14 @@
 			<Card.Title>Season Recognition</Card.Title>
 		</Card.Header>
 		<Card.Content class="min-h-72 w-full text-4xl font-bold">
-			{#if ndviSeason.status === 'loading'}
+			{#if growthRatesAnalysis.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if ndviSeason.status === 'error'}
-				<OctagonAlert />
-			{:else}
+			{:else if growthRatesAnalysis.data && growthRatesAnalysis.status === 'success'}
 				<div class="text-4xl">
 					<span class="text-2xl text-muted-foreground">Recognized Seasons:</span>
 					<Separator class="my-4"></Separator>
 					<div class="font-bold align-middle">
-						{#each ndviSeason.data.seasons as season, index}
+						{#each growthRatesAnalysis.data.seasons as season, index}
 							<span class="text-center">
 								{season.season_start_description}
 								-
@@ -77,6 +98,8 @@
 						{/each}
 					</div>
 				</div>
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">Some text here</Card.Content>

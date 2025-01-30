@@ -1,221 +1,12 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index';
-	import type { ChartConfiguration } from 'chart.js';
-	import { onMount } from 'svelte';
 	import { selectedTask } from '#app/stores';
-	import toast from 'svelte-french-toast';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import TaskCards from './TaskCards.svelte';
 	import SeasonCards from './SeasonCards.svelte';
 	import InspectorCard from './InspectorCard.svelte';
 	import SpatialDistributionHeatMapCard from './SpatialDistributionHeatMapCard.svelte';
 	import GrowthRatesCard from './GrowthRatesCard.svelte';
-	import { authenticatedBackendFetch } from '../utils';
-
-	type DashboardFetchData = {
-		status: 'loading' | 'error' | 'success';
-		data: any | null;
-	};
-
-	let totalObservedArea: DashboardFetchData = {
-		status: 'loading',
-		data: null
-	};
-	let ndviHeatMap: DashboardFetchData = {
-		status: 'loading',
-		data: null
-	};
-	let ndviSeason: DashboardFetchData = {
-		status: 'loading',
-		data: null
-	};
-	let availableDates: DashboardFetchData = {
-		status: 'loading',
-		data: null
-	};
-	let inspectorData: DashboardFetchData = {
-		status: 'success',
-		data: null
-	};
-
-	async function handleDateClick(dateString: string): Promise<void> {
-		if (!$selectedTask) return;
-		inspectorData = {
-			status: 'loading',
-			data: null
-		};
-		inspectorData = await fetchInspectorData($selectedTask.id, dateString);
-	}
-
-	function getNdviSeasonDataChartConfig(labels: string[], data: number[]): ChartConfiguration {
-		return {
-			type: 'bar',
-			data: {
-				labels: labels,
-				datasets: [
-					{
-						label: 'Some Data here',
-						data: data,
-						fill: true,
-						backgroundColor: '#4CAF50'
-					}
-				]
-			},
-			options: {
-				responsive: true
-			}
-		};
-	}
-
-	onMount(async () => {
-		const taskId = $selectedTask?.id;
-		if (taskId) {
-			ndviHeatMap = await authenticatedBackendFetch<DashboardFetchData>(
-				`report/spatial-analysis?taskId=${taskId}`,
-				'GET'
-			);
-			ndviSeason = await authenticatedBackendFetch<DashboardFetchData>(
-				`report/season-analysis?taskId=${taskId}`,
-				'GET'
-			);
-			availableDates = await authenticatedBackendFetch<DashboardFetchData>(
-				`report/available-dates?taskId=${taskId}`,
-				'GET'
-			);
-		}
-	});
-
-	async function fetchNdviHeatMap(taskId: string): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/spatial-analysis?taskId=${taskId}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: data
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to load Biomass Heatmap data. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
-	async function fetchNdviSeasonData(taskId: string): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/season-analysis?taskId=${taskId}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: data
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to load NDVI Season Data. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
-	async function fetchAvailableDates(taskId: string): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/available-dates?taskId=${taskId}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: data
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to Inspector data. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
-	async function fetchInspectorData(
-		taskId: string,
-		dateString: string
-	): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/analysis-record?taskId=${taskId}&&dateString=${dateString}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: data
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to load Inspector data. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
 </script>
 
 {#if $selectedTask}
@@ -225,24 +16,19 @@
 
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
 		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
-		<TaskCards taskId={$selectedTask.id} selectedTask={$selectedTask} />
+		<TaskCards selectedTask={$selectedTask} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Inspector</h2>
 		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
-		<InspectorCard
-			selectedTask={$selectedTask}
-			{handleDateClick}
-			{inspectorData}
-			{availableDates}
-		/>
+		<InspectorCard selectedTask={$selectedTask} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
 		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
-		<SeasonCards {ndviSeason} />
+		<SeasonCards taskId={$selectedTask.id} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Growth Rate Patterns</h2>
 		<p class="text-muted-foreground">Some info here</p>
-		<GrowthRatesCard {ndviSeason} />
+		<GrowthRatesCard taskId={$selectedTask.id} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Spatial Insights</h2>
 		<p class="text-muted-foreground">
@@ -251,7 +37,7 @@
 			normalized ratio of observed area to green surface biomass. This score indicates the
 			likelihood of any area within the cell being fully covered by vegetation at any point.
 		</p>
-		<SpatialDistributionHeatMapCard {ndviHeatMap} />
+		<SpatialDistributionHeatMapCard taskId={$selectedTask.id} />
 	</div>
 {:else}
 	<div class="flex items-center">

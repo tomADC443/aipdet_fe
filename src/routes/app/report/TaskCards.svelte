@@ -6,10 +6,10 @@
 	import type { Task } from '#routes/app/task/types';
 	import { calculateDateDifference } from './utils';
 	import { onMount } from 'svelte';
-	import { authenticatedBackendFetch } from '../utils';
+	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
+	import toast from 'svelte-french-toast';
 
 	export let selectedTask: Task;
-	export let taskId: string;
 
 	type TotalImageCountData = { count: number };
 	let totalImageCount: DashboardFetchData<TotalImageCountData> = {
@@ -31,17 +31,28 @@
 
 	onMount(async () => {
 		totalImageCount = await authenticatedBackendFetch<TotalImageCountData>(
-			`report/number-total-distinct-images?taskId=${taskId}`,
+			`report/number-total-distinct-images?taskId=${selectedTask.id}`,
 			'GET'
 		);
+		if (totalImageCount.status === 'error') {
+			toast.error(`Image Count: ${getErrorCodeText(totalImageCount.errorCode)}`);
+		}
+
 		temporalRange = await authenticatedBackendFetch<TemporalRangeData>(
-			`report/temporal-range?taskId=${taskId}`,
+			`report/temporal-range?taskId=${selectedTask.id}`,
 			'GET'
 		);
+		if (temporalRange.status === 'error') {
+			toast.error(`Temporal Range: ${getErrorCodeText(temporalRange.errorCode)}`);
+		}
+
 		totalObservedArea = await authenticatedBackendFetch<TotalObservedAreaData>(
-			`report/total-observed-area?taskId=${taskId}`,
+			`report/total-observed-area?taskId=${selectedTask.id}`,
 			'GET'
 		);
+		if (totalObservedArea.status === 'error') {
+			toast.error(`Observation Area: ${getErrorCodeText(totalObservedArea.errorCode)}`);
+		}
 	});
 </script>
 

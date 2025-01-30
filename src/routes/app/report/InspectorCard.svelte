@@ -3,18 +3,17 @@
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import * as Card from '$lib/components/ui/card/index';
-
 	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import type { DashboardFetchData } from './types';
 	import type { Task } from '#routes/app/task/types';
-	import { COLOR } from './constants';
+	import { onMount } from 'svelte';
+	import type { GeoJSON } from 'geojson';
+	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
+	import toast from 'svelte-french-toast';
 
 	export let selectedTask: Task;
-	export let inspectorData: DashboardFetchData;
-	export let availableDates: DashboardFetchData;
-	export let handleDateClick: (dateString: string) => Promise<void>;
 
 	let selectedDateString = 'None';
 	$: selectedDateString =
@@ -22,6 +21,51 @@
 	let showObservedLayer = true;
 	let showNdviLayer = true;
 	let showWhcLayer = true;
+
+	type AnalysisRecordData = {
+		observed_areas: GeoJSON[];
+		ndvi_areas: GeoJSON[];
+		whc_areas: GeoJSON[];
+		dateString: string;
+	};
+	let inspectorData: DashboardFetchData<AnalysisRecordData> = {
+		status: 'loading',
+		data: null
+	};
+
+	type AvailableDatesData = {
+		dates: string[]; // ISO date strings (date values)
+	};
+	let availableDates: DashboardFetchData<AvailableDatesData> = {
+		status: 'loading',
+		data: null
+	};
+
+	async function handleDateClick(dateString: string): Promise<void> {
+		inspectorData = {
+			status: 'loading',
+			data: null
+		};
+		inspectorData = await authenticatedBackendFetch<AnalysisRecordData>(
+			`report/analysis-record?taskId=${selectedTask.id}&&dateString=${dateString}`,
+			'GET'
+		);
+
+		if (inspectorData.status === 'error') {
+			toast.error(`Inspector Map: ${getErrorCodeText(inspectorData.errorCode)}`);
+		}
+		return;
+	}
+
+	onMount(async () => {
+		availableDates = await authenticatedBackendFetch<AvailableDatesData>(
+			`report/available-dates?taskId=${selectedTask.id}`,
+			'GET'
+		);
+		if (availableDates.status === 'error') {
+			toast.error(`Available Dates: ${getErrorCodeText(availableDates.errorCode)}`);
+		}
+	});
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 w-full z-0">
@@ -64,7 +108,7 @@
 					name: selectedTask.aoi.name,
 					geometry: selectedTask.aoi.geometry
 				}}
-				recordData={inspectorData.data}
+				recordData={inspectorData.status ? inspectorData.data : null}
 			/>
 		</Card.Content>
 
@@ -76,10 +120,8 @@
 		<ScrollArea class="h-[calc(100%-2rem)]">
 			{#if availableDates.status === 'loading'}
 				<LoaderCircle class="animate-spin h-full" />
-			{:else if availableDates.status === 'error'}
-				<OctagonAlert />
-			{:else}
-				{#each availableDates.data as availableDate}
+			{:else if availableDates.data && availableDates.status === 'success'}
+				{#each availableDates.data.dates as availableDate}
 					<div class="flex flex-col items-center w-full text-sm font-mono">
 						<Button
 							class="w-full"
@@ -92,6 +134,8 @@
 						<Separator class="my-2 w-full" />
 					</div>
 				{/each}
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</ScrollArea>
 	</div>

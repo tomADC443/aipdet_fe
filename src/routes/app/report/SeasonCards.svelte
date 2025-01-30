@@ -6,8 +6,12 @@
 	import type { ChartConfiguration } from 'chart.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import type { DashboardFetchData } from './types';
+	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
+	import toast from 'svelte-french-toast';
+	import { onMount } from 'svelte';
+	import type { SeasonAnalysisData } from './types';
 
-	export let ndviSeason: DashboardFetchData;
+	export let taskId: string;
 
 	function getNdviSeasonDataChartConfig(labels: string[], data: number[]): ChartConfiguration {
 		return {
@@ -16,7 +20,7 @@
 				labels: labels,
 				datasets: [
 					{
-						label: 'Some Data here',
+						label: 'Monthly Average Biomass Coverage',
 						data: data,
 						fill: true,
 						backgroundColor: '#4CAF50'
@@ -28,6 +32,19 @@
 			}
 		};
 	}
+	let seasonAnalysis: DashboardFetchData<SeasonAnalysisData> = {
+		status: 'loading',
+		data: null
+	};
+	onMount(async () => {
+		seasonAnalysis = await authenticatedBackendFetch<SeasonAnalysisData>(
+			`report/spatial-analysis?taskId=${taskId}`,
+			'GET'
+		);
+		if (seasonAnalysis.status === 'error') {
+			toast.error(`Heatmap: ${getErrorCodeText(seasonAnalysis.errorCode)}`);
+		}
+	});
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -37,17 +54,17 @@
 			<Card.Title>Seasons Graph</Card.Title>
 		</Card.Header>
 		<Card.Content class="min-h-72 text-4xl font-bold">
-			{#if ndviSeason.status === 'loading'}
+			{#if seasonAnalysis.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if ndviSeason.status === 'error'}
-				<OctagonAlert />
-			{:else}
+			{:else if seasonAnalysis.data && seasonAnalysis.status === 'success'}
 				<Chart
 					chartData={getNdviSeasonDataChartConfig(
-						ndviSeason.data.monthly_average.month,
-						ndviSeason.data.monthly_average.values
+						seasonAnalysis.data.monthly_average.month,
+						seasonAnalysis.data.monthly_average.values
 					)}
 				/>
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">
@@ -63,16 +80,14 @@
 			<Card.Title>Season Recognition</Card.Title>
 		</Card.Header>
 		<Card.Content class="min-h-72 text-4xl font-bold">
-			{#if ndviSeason.status === 'loading'}
+			{#if seasonAnalysis.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if ndviSeason.status === 'error'}
-				<OctagonAlert />
-			{:else}
+			{:else if seasonAnalysis.data && seasonAnalysis.status === 'success'}
 				<div class="text-4xl">
 					<span class="text-2xl text-muted-foreground">Recognized Seasons:</span>
 					<Separator class="my-4"></Separator>
 					<div class="font-bold align-middle">
-						{#each ndviSeason.data.seasons as season, index}
+						{#each seasonAnalysis.data.seasons as season, index}
 							<span class="text-center">
 								{season.season_start_description}
 								-
@@ -81,6 +96,8 @@
 						{/each}
 					</div>
 				</div>
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">
