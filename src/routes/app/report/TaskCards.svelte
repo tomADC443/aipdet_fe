@@ -3,14 +3,46 @@
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import type { DashboardFetchData } from './types';
 	import * as Card from '$lib/components/ui/card/index';
-
 	import type { Task } from '#routes/app/task/types';
 	import { calculateDateDifference } from './utils';
+	import { onMount } from 'svelte';
+	import { authenticatedBackendFetch } from '../utils';
 
 	export let selectedTask: Task;
-	export let totalImageCount: DashboardFetchData;
-	export let temporalRange: DashboardFetchData;
-	export let totalObservedArea: DashboardFetchData;
+	export let taskId: string;
+
+	type TotalImageCountData = { count: number };
+	let totalImageCount: DashboardFetchData<TotalImageCountData> = {
+		status: 'loading',
+		data: null
+	};
+
+	type TemporalRangeData = { fromDate: number; toDate: number };
+	let temporalRange: DashboardFetchData<TemporalRangeData> = {
+		status: 'loading',
+		data: null
+	};
+
+	type TotalObservedAreaData = { area: number };
+	let totalObservedArea: DashboardFetchData<TotalObservedAreaData> = {
+		status: 'loading',
+		data: null
+	};
+
+	onMount(async () => {
+		totalImageCount = await authenticatedBackendFetch<TotalImageCountData>(
+			`report/number-total-distinct-images?taskId=${taskId}`,
+			'GET'
+		);
+		temporalRange = await authenticatedBackendFetch<TemporalRangeData>(
+			`report/temporal-range?taskId=${taskId}`,
+			'GET'
+		);
+		totalObservedArea = await authenticatedBackendFetch<TotalObservedAreaData>(
+			`report/total-observed-area?taskId=${taskId}`,
+			'GET'
+		);
+	});
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -35,10 +67,10 @@
 		<Card.Content class="text-4xl font-bold">
 			{#if totalImageCount.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if totalImageCount.status === 'error'}
-				<OctagonAlert />
+			{:else if totalImageCount.data && totalImageCount.status === 'success'}
+				{totalImageCount.data.count}
 			{:else}
-				{totalImageCount.data}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">
@@ -54,16 +86,22 @@
 		<Card.Content class="text-4xl font-bold">
 			{#if temporalRange.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if temporalRange.status === 'error'}
-				<OctagonAlert />
-			{:else}
+			{:else if temporalRange.data && temporalRange.status === 'success'}
 				<div class="pb-2">
-					{calculateDateDifference(temporalRange.data.fromDate, temporalRange.data.toDate).years} Years
+					{calculateDateDifference(
+						String(temporalRange.data.fromDate),
+						String(temporalRange.data.toDate)
+					).years} Years
 				</div>
 				<div class="overline">
-					{calculateDateDifference(temporalRange.data.fromDate, temporalRange.data.toDate).months}
+					{calculateDateDifference(
+						String(temporalRange.data.fromDate),
+						String(temporalRange.data.toDate)
+					).months}
 					Months
 				</div>
+			{:else}
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">
@@ -83,10 +121,10 @@
 		<Card.Content class="text-4xl font-bold">
 			{#if totalObservedArea.status === 'loading'}
 				<LoaderCircle class="animate-spin" />
-			{:else if totalObservedArea.status === 'error'}
-				<OctagonAlert />
+			{:else if totalObservedArea.data && totalObservedArea.status === 'success'}
+				{totalObservedArea.data.area} km²
 			{:else}
-				{totalObservedArea.data} km²
+				<OctagonAlert />
 			{/if}
 		</Card.Content>
 		<Card.Content class="text-muted-foreground text-xs">
