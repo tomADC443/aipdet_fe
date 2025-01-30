@@ -3,10 +3,9 @@ export interface NDVIDataPoint {
     value: number;  // Area in square kilometers
 }
 
-export type DashboardFetchData = {
+export type DashboardFetchData<T> = {
     status: 'loading' | 'error' | 'success';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any | null;
+    data: T | null;
 };
 export type NDVIAreaData = NDVIDataPoint[];
 export type FeaturedLayer = 'NDVI' | 'WHC';

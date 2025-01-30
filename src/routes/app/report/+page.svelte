@@ -10,19 +10,13 @@
 	import InspectorCard from './InspectorCard.svelte';
 	import SpatialDistributionHeatMapCard from './SpatialDistributionHeatMapCard.svelte';
 	import GrowthRatesCard from './GrowthRatesCard.svelte';
+	import { authenticatedBackendFetch } from '../utils';
 
 	type DashboardFetchData = {
 		status: 'loading' | 'error' | 'success';
 		data: any | null;
 	};
-	let totalImageCount: DashboardFetchData = {
-		status: 'loading',
-		data: null
-	};
-	let temporalRange: DashboardFetchData = {
-		status: 'loading',
-		data: null
-	};
+
 	let totalObservedArea: DashboardFetchData = {
 		status: 'loading',
 		data: null
@@ -74,115 +68,23 @@
 	}
 
 	onMount(async () => {
-		if ($selectedTask) {
-			totalImageCount = await fetchTotalImageCount($selectedTask.id);
-			temporalRange = await fetchTemporalRange($selectedTask.id);
-			totalObservedArea = await fetchTotalObservedArea($selectedTask.id);
-			ndviHeatMap = await fetchNdviHeatMap($selectedTask.id);
-			ndviSeason = await fetchNdviSeasonData($selectedTask.id);
-			availableDates = await fetchAvailableDates($selectedTask.id);
-			// await fetchSpecificAOI($selectedTask.aoiId);
-			// fetchNdviAreaData($selectedTask.id);
+		const taskId = $selectedTask?.id;
+		if (taskId) {
+			ndviHeatMap = await authenticatedBackendFetch<DashboardFetchData>(
+				`report/spatial-analysis?taskId=${taskId}`,
+				'GET'
+			);
+			ndviSeason = await authenticatedBackendFetch<DashboardFetchData>(
+				`report/season-analysis?taskId=${taskId}`,
+				'GET'
+			);
+			availableDates = await authenticatedBackendFetch<DashboardFetchData>(
+				`report/available-dates?taskId=${taskId}`,
+				'GET'
+			);
 		}
 	});
 
-	async function fetchTotalImageCount(taskId: string): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/number-total-distinct-images?taskId=${taskId}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: String(data.count)
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to load Image Count data. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
-	async function fetchTemporalRange(taskId: string): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/temporal-range?taskId=${taskId}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: data
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to load Temporal Range. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
-	async function fetchTotalObservedArea(taskId: string): Promise<DashboardFetchData> {
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_URL_API}/api/report/total-observed-area?taskId=${taskId}`,
-
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					}
-				}
-			);
-			const data = await response.json();
-			if (response.ok) {
-				return {
-					status: 'success',
-					data: data.area
-				};
-			} else {
-				throw `Response not ok ${response}`;
-			}
-		} catch (error) {
-			console.log(error);
-			toast.error('Failed to load Total Observed Area data. Try again Later.');
-			return {
-				status: 'error',
-				data: null
-			};
-		}
-	}
 	async function fetchNdviHeatMap(taskId: string): Promise<DashboardFetchData> {
 		try {
 			const response = await fetch(
@@ -323,7 +225,7 @@
 
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
 		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
-		<TaskCards selectedTask={$selectedTask} {totalImageCount} {temporalRange} {totalObservedArea} />
+		<TaskCards taskId={$selectedTask.id} selectedTask={$selectedTask} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Inspector</h2>
 		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
