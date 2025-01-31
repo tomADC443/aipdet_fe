@@ -1,30 +1,30 @@
 <script lang="ts">
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
-	import type { DashboardFetchData } from './types';
+	import type { FetchData } from '#app/types';
 	import * as Card from '$lib/components/ui/card/index';
 	import type { Task } from '#routes/app/task/types';
 	import { calculateDateDifference } from './utils';
 	import { onMount } from 'svelte';
-	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
+	import { authenticatedBackendFetch, getErrorCodeText } from '#app/utils';
 	import toast from 'svelte-french-toast';
 
 	export let selectedTask: Task;
 
 	type TotalImageCountData = { count: number };
-	let totalImageCount: DashboardFetchData<TotalImageCountData> = {
+	let totalImageCount: FetchData<TotalImageCountData> = {
 		status: 'loading',
 		data: null
 	};
 
 	type TemporalRangeData = { fromDate: number; toDate: number };
-	let temporalRange: DashboardFetchData<TemporalRangeData> = {
+	let temporalRange: FetchData<TemporalRangeData> = {
 		status: 'loading',
 		data: null
 	};
 
 	type TotalObservedAreaData = { area: number };
-	let totalObservedArea: DashboardFetchData<TotalObservedAreaData> = {
+	let totalObservedArea: FetchData<TotalObservedAreaData> = {
 		status: 'loading',
 		data: null
 	};

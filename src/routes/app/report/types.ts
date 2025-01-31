@@ -3,12 +3,6 @@ export interface NDVIDataPoint {
     value: number;  // Area in square kilometers
 }
 
-export type DashboardFetchData<T> = {
-    status: 'loading' | 'error' | 'success';
-    data: T | null;
-    errorCode?: number;
-};
-export type NDVIAreaData = NDVIDataPoint[];
 export type FeaturedLayer = 'NDVI' | 'WHC';
 
 export type SeasonAnalysisData = { // Shared in multiple components

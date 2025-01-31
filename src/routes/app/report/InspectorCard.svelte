@@ -6,7 +6,7 @@
 	import InspectorMap from '$lib/components/map/InspectorMap.svelte';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-	import type { DashboardFetchData } from './types';
+	import type { FetchData } from '#app/types';
 	import type { Task } from '#routes/app/task/types';
 	import { onMount } from 'svelte';
 	import type { GeoJSON } from 'geojson';
@@ -28,7 +28,7 @@
 		whc_areas: GeoJSON[];
 		dateString: string;
 	};
-	let inspectorData: DashboardFetchData<AnalysisRecordData> = {
+	let inspectorData: FetchData<AnalysisRecordData> = {
 		status: 'loading',
 		data: null
 	};
@@ -36,7 +36,7 @@
 	type AvailableDatesData = {
 		dates: string[]; // ISO date strings (date values)
 	};
-	let availableDates: DashboardFetchData<AvailableDatesData> = {
+	let availableDates: FetchData<AvailableDatesData> = {
 		status: 'loading',
 		data: null
 	};

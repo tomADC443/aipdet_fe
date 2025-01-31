@@ -1,20 +1,9 @@
+import type { FetchResponse, FetchMethod, FetchOptions } from "./types";
+
 export function formatUnixTimestampToLocalTime(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
     return date.toLocaleString();
 }
-
-type FetchResponse<T> = {
-    status: 'error' | 'success';
-    data: T | null;
-    errorCode?: number;
-};
-
-type FetchMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-
-type FetchOptions = {
-    headers?: Record<string, string>;
-    credentials?: RequestCredentials;
-};
 
 export async function authenticatedBackendFetch<T>(
     endpoint: string,
@@ -71,6 +60,6 @@ export function getErrorCodeText(errorCode?: number): string {
     } else if (errorCode === 404) {
         return 'Task could not be found. Please try again later.'
     } else {
-        return 'Failed to fetch total image count. Please try again later.';
+        return 'Failed to fetch data. Please try again later.';
     }
 }

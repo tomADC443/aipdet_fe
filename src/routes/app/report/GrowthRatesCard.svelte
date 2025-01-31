@@ -7,13 +7,13 @@
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { onMount } from 'svelte';
 	import type { SeasonAnalysisData } from './types';
-	import type { DashboardFetchData } from './types';
+	import type { FetchData } from '#app/types';
 	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
 	import toast from 'svelte-french-toast';
 
 	export let taskId: string;
 
-	let growthRatesAnalysis: DashboardFetchData<SeasonAnalysisData> = {
+	let growthRatesAnalysis: FetchData<SeasonAnalysisData> = {
 		status: 'loading',
 		data: null
 	};

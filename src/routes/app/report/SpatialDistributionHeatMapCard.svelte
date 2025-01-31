@@ -3,17 +3,19 @@
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import * as Card from '$lib/components/ui/card/index';
 	import SpatialAnalysisMap from '$lib/components/map/SpatialAnalysisMap.svelte';
-	import type { DashboardFetchData, FeaturedLayer } from './types.ts';
-	import { Button } from '$lib/components/ui/button/index';
+	import type { FetchData } from '#app/types';
+	import type { FeaturedLayer } from './types';
+	import '$lib/components/ui/button/index';
 	import { onMount } from 'svelte';
 	import type { FeatureCollection } from 'geojson';
 	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
 	import toast from 'svelte-french-toast';
+	import { Button } from '$lib/components/ui/button/index.js';
 
 	export let taskId: string;
 
 	type NdviHeatMapData = FeatureCollection;
-	let ndviHeatMap: DashboardFetchData<NdviHeatMapData> = {
+	let ndviHeatMap: FetchData<NdviHeatMapData> = {
 		status: 'loading',
 		data: null
 	};

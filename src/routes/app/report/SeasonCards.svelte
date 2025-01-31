@@ -5,7 +5,7 @@
 	import Chart from '$lib/components/chart/Chart.svelte';
 	import type { ChartConfiguration } from 'chart.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import type { DashboardFetchData } from './types';
+	import type { FetchData } from '#app/types';
 	import { authenticatedBackendFetch, getErrorCodeText } from '../utils';
 	import toast from 'svelte-french-toast';
 	import { onMount } from 'svelte';
@@ -32,7 +32,7 @@
 			}
 		};
 	}
-	let seasonAnalysis: DashboardFetchData<SeasonAnalysisData> = {
+	let seasonAnalysis: FetchData<SeasonAnalysisData> = {
 		status: 'loading',
 		data: null
 	};
