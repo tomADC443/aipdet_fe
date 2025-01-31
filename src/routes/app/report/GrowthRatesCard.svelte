@@ -19,7 +19,7 @@
 	};
 	onMount(async () => {
 		growthRatesAnalysis = await authenticatedBackendFetch<SeasonAnalysisData>(
-			`report/spatial-analysis?taskId=${taskId}`,
+			`report/season-analysis?taskId=${taskId}`,
 			'GET'
 		);
 		if (growthRatesAnalysis.status === 'error') {
@@ -89,13 +89,17 @@
 					<span class="text-2xl text-muted-foreground">Recognized Seasons:</span>
 					<Separator class="my-4"></Separator>
 					<div class="font-bold align-middle">
-						{#each growthRatesAnalysis.data.seasons as season, index}
-							<span class="text-center">
-								{season.season_start_description}
-								-
-								{season.season_end_description}
-							</span>
-						{/each}
+						{#if growthRatesAnalysis.data.seasons.length > 0}
+							{#each growthRatesAnalysis.data.seasons as season, index}
+								<span class="text-center">
+									{season.season_start_description}
+									-
+									{season.season_end_description}
+								</span>
+							{/each}
+						{:else}
+							<span class="text-center">No seasons recognized</span>
+						{/if}
 					</div>
 				</div>
 			{:else}
