@@ -38,7 +38,7 @@
 	};
 	onMount(async () => {
 		seasonAnalysis = await authenticatedBackendFetch<SeasonAnalysisData>(
-			`report/spatial-analysis?taskId=${taskId}`,
+			`report/season-analysis?taskId=${taskId}`,
 			'GET'
 		);
 		if (seasonAnalysis.status === 'error') {
