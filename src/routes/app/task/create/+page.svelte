@@ -5,8 +5,11 @@
 
 <div class="hidden space-y-6 p-10 pb-16 md:block">
 	<div class="space-y-0.5">
-		<h2 class="text-2xl font-bold tracking-tight">Settings</h2>
-		<p class="text-muted-foreground">Manage your account settings and set e-mail preferences.</p>
+		<h2 class="text-2xl font-bold tracking-tight">Add a new Task</h2>
+		<p class="text-muted-foreground">
+			Add a new Tasks. Public Tasks will be visible to other Users. Be aware that a public Task will
+			make the selected AOI data public as well.
+		</p>
 	</div>
 	<Separator class="my-6" />
 	<div class="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
