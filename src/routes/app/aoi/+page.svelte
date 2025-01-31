@@ -9,7 +9,7 @@
 	<h1 class="text-lg font-semibold md:text-2xl">Areas of Interest (AOIs)</h1>
 	<Card.Root>
 		<Card.Header>
-			<div class=" flex flex-row justify-between items-center pb-6">
+			<div class="flex flex-row justify-between items-center gap-4 pb-6">
 				<div>
 					<Card.Title class="pb-2">Create an Area of Interest</Card.Title>
 					<Card.Description
