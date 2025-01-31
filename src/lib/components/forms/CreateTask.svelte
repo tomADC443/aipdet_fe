@@ -11,7 +11,6 @@
 	import * as Select from '$lib/components/ui/select';
 	import type { AOI } from '#routes/app/aoi/types';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import { zod } from 'sveltekit-superforms/adapters';
 	import type { Selected } from 'bits-ui';
 
 	let isLoading = false;
@@ -34,6 +33,7 @@
 				aois = data.aois;
 				if (aois.length === 0) {
 					aoiFetchStatus = 'empty';
+					toast.error('You need to crate at least one AOI first.');
 				} else {
 					aoiFetchStatus = 'success';
 				}
@@ -174,7 +174,7 @@
 	}
 </script>
 
-<div class="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+<div class="w-full h-full lg:grid lg:grid-cols-2">
 	<div class="flex items-center justify-center py-12">
 		<form class="mx-auto grid w-[350px] gap-6">
 			<div class="grid gap-4">
