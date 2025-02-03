@@ -54,6 +54,7 @@
 			if (response.ok) {
 				const payload = await response.json();
 				localStorage.setItem('loginExpires', String(payload.expires));
+				localStorage.setItem('userEmail', String(payload.data.email));
 				// Login successful
 				goto('/app/aoi'); // Redirect user to the aoi
 			} else {

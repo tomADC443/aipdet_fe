@@ -2,13 +2,28 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import CircleUser from 'lucide-svelte/icons/circle-user';
-	import { userPrefersMode } from 'mode-watcher';
-	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { authenticatedBackendFetch } from '#routes/app/utils';
+	import toast from 'svelte-french-toast';
+	import type { FetchData } from '#routes/app/types';
 
-	onMount(() => {});
+	let userEmail = localStorage.getItem('userEmail');
+
+	async function handleLogout() {
+		let result: FetchData<null> = {
+			status: 'loading',
+			data: null
+		};
+		result = await authenticatedBackendFetch<null>('user/logout', 'POST');
+		if (result.status === 'success') {
+			toast.success(`Logout successful`);
+			goto('/');
+		} else {
+			toast.error(`Logout failed`);
+		}
+	}
 </script>
 
-<!-- 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button builders={[builder]} variant="secondary" size="icon" class="rounded-full">
@@ -17,14 +32,21 @@
 		</Button>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end">
-		<DropdownMenu.Label
-			>{#if user?.name || user?.nickname}{user?.name || user?.nickname}{:else}My Account
-			{/if}</DropdownMenu.Label
-		>
+		<DropdownMenu.Label>My Account</DropdownMenu.Label>
+		{#if userEmail}
+			<DropdownMenu.Label>{userEmail}</DropdownMenu.Label>
+		{/if}
+
 		<DropdownMenu.Separator />
 		<a href="mailto:tom@tpl.dev?subject=Support-Request:AIPDET"
 			><DropdownMenu.Item>Support</DropdownMenu.Item></a
 		>
-		<DropdownMenu.Item on:click={())}>Logout</DropdownMenu.Item>
+		<DropdownMenu.Item
+			on:click={() => {
+				localStorage.removeItem('userEmail');
+				localStorage.removeItem('loginExpires');
+				handleLogout();
+			}}>Logout</DropdownMenu.Item
+		>
 	</DropdownMenu.Content>
-</DropdownMenu.Root> -->
+</DropdownMenu.Root>
