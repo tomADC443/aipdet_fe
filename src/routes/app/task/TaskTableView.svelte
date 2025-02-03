@@ -3,12 +3,9 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import type { Variant as BadgeVariant } from '$lib/components/ui/badge/index.js';
 	import type { ButtonProps } from '$lib/components/ui/button/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-
 	import { selectedTask } from '#app/stores';
 	import type { Task } from '#routes/app/task/types';
-	import toast from 'svelte-french-toast';
 	import { TaskStatus } from '#routes/app/task/constants';
 	import BanIcon from 'lucide-svelte/icons/ban';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
@@ -85,11 +82,24 @@
 					{/if}
 				</Table.Cell>
 				<Table.Cell>
-					<Button
-						size="sm"
-						on:click={() => handleDeleteClick(task.id)}
-						variant={getDeleteButtonVariantByStatus(task.status)}>Delete</Button
-					>
+					{#if task.status == TaskStatus.Processing}
+						<Tooltip.Root>
+							<Tooltip.Trigger>
+								<Button size="icon" variant="outline" disabled>
+									<BanIcon />
+								</Button>
+							</Tooltip.Trigger>
+							<Tooltip.Content>
+								<p>Wait for the Task to finish fist. It needs status Successful or Failed.</p>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					{:else}
+						<Button
+							size="sm"
+							on:click={() => handleDeleteClick(task.id)}
+							variant={getDeleteButtonVariantByStatus(task.status)}>Delete</Button
+						>
+					{/if}
 				</Table.Cell>
 			</Table.Row>
 		{/each}

@@ -5,3 +5,7 @@ export type AOI = {
     createdAt: number;
     geometry: string;
 }
+
+export type FetchedAOI = AOI & {
+    hasTask: boolean;
+}

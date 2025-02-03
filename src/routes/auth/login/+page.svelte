@@ -55,7 +55,7 @@
 				const payload = await response.json();
 				localStorage.setItem('loginExpires', String(payload.expires));
 				// Login successful
-				goto('/app/dashboard'); // Redirect user to the dashboard or desired page
+				goto('/app/aoi'); // Redirect user to the aoi
 			} else {
 				const error = await response.json();
 
