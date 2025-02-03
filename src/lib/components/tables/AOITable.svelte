@@ -1,14 +1,16 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
-	import type { AOI } from '#app/aoi/types';
+	import type { FetchedAOI } from '#app/aoi/types';
 	import toast from 'svelte-french-toast';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
-	import Plus from 'lucide-svelte/icons/plus';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import { formatUnixTimestampToLocalTime } from '#routes/app/utils';
-	let aois: AOI[] = [];
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import BanIcon from 'lucide-svelte/icons/ban';
+
+	let aois: FetchedAOI[] = [];
 	let status: 'loading' | 'success' | 'empty' | 'error' = 'loading';
 	onMount(() => {
 		fetchAois();
@@ -123,9 +125,21 @@
 								{formatUnixTimestampToLocalTime(aoi.createdAt)}
 							</Table.Cell>
 							<Table.Cell>
-								<Button size="sm" variant="outline" on:click={() => handleAoiDelete(aoi.id)}
-									>Delete</Button
-								>
+								{#if aoi.hasTask}
+									<Tooltip.Root>
+										<Tooltip.Trigger>
+											<Button size="icon" variant="outline" disabled>
+												<BanIcon />
+											</Button>
+										</Tooltip.Trigger>
+										<Tooltip.Content>
+											<p>AOI cannot be deleted if it has an active Task. Delete the Task first.</p>
+										</Tooltip.Content>
+									</Tooltip.Root>
+								{:else}
+									<Button size="sm" variant="outline" on:click={() => handleAoiDelete(aoi.id)}
+										>Delete</Button
+									>{/if}
 							</Table.Cell>
 						</Table.Row>
 					{/each}
