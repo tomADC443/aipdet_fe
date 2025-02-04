@@ -29,7 +29,7 @@
 		dateString: string;
 	};
 	let inspectorData: FetchData<AnalysisRecordData> = {
-		status: 'loading',
+		status: 'success',
 		data: null
 	};
 
@@ -127,9 +127,9 @@
 							class="w-full"
 							disabled={inspectorData.status === 'loading'}
 							variant="ghost"
-							on:click={() => handleDateClick(availableDate)}
+							on:click={() => handleDateClick(availableDate.substring(0, 10))}
 						>
-							{availableDate}
+							{availableDate.substring(0, 10)}
 						</Button>
 						<Separator class="my-2 w-full" />
 					</div>
