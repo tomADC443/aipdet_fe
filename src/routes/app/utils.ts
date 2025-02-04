@@ -18,14 +18,20 @@ export async function authenticatedBackendFetch<T>(
         }
     };
 
+    const mergedOptions = {
+        ...defaultOptions,
+        ...options,
+        headers: {
+            ...defaultOptions.headers,
+            ...(options.headers || {})
+        }
+    };
+
+
     try {
         const response = await fetch(
             `${import.meta.env.VITE_BASE_URL_API}/api/${endpoint}`,
-            {
-                method,
-                ...defaultOptions,
-                ...options
-            }
+            { ...mergedOptions, method: method }
         );
 
         if (!response.ok) {
