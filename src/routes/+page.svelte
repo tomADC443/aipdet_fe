@@ -15,15 +15,17 @@
 					href="#features"
 					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Features</a
 				>
-				<a href="#about" class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]"
-					>About</a
-				>
 				<a
 					href="#contact"
 					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Contact</a
 				>
-				<a href="#demo" class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]"
-					>Demo</a
+				<a
+					href="/auth/login"
+					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Login</a
+				>
+				<a
+					href="/auth/signup"
+					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Signup</a
 				>
 			</nav>
 		</div>
