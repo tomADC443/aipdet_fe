@@ -3,7 +3,7 @@ import { sveltePreprocess } from 'svelte-preprocess';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -21,8 +21,14 @@ const config = {
 			out: 'build',
 			precompress: false,
 			envPrefix: ''
-		})
+		}),
+		files: {
+			hooks: {
+				server: './hooks.server.ts'
+			}
+		}
 	}
+
 };
 
 export default config;
