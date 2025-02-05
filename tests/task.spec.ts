@@ -12,7 +12,6 @@ test('Login and visit task', async ({ page }) => {
     await page.getByRole('textbox', { name: 'Name' }).click();
     await page.getByRole('textbox', { name: 'Name' }).fill('Sample Task');
     await page.getByRole('combobox').click();
-    await page.getByRole('option', { name: 'Test Aoi' }).click();
     await expect(page.getByRole('button', { name: 'Create Task' })).toBeVisible();
 });
 

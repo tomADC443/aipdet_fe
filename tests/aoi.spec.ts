@@ -19,6 +19,8 @@ async function createAoi(page: Page) {
     await expect(page.getByText('Perimeter 8.29 km')).toBeVisible();
     // save the aoi 
     await page.getByRole('button', { name: 'Save AOI' }).click();
+    // wait for "AOI saved successfully"  toast
+    await expect(page.getByText('AOI saved successfully')).toBeVisible();
     await page.getByRole('link', { name: 'AOIs' }).click();
 }
 
