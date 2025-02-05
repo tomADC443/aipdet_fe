@@ -9,7 +9,7 @@
 	}
 </script>
 
-<div class="flex justify-center lg:flex-row items-stretch w-full min-h-screen">
+<div class="flex justify-center lg:flex-row items-stretch w-full h-full min-h-screen">
 	<div class="flex flex-col justify-center items-center lg:basis-1/2 gap-2">
 		<div class="flex flex-col items-center">
 			<h1 class="text-3xl font-bold">Access</h1>
@@ -26,7 +26,7 @@
 		<img
 			src={authImage}
 			alt="satellite landscape of a river - auth"
-			class="h-full w-full object-cover object-center dark:brightness-[0.7]"
+			class="h-full min-h-full min-w-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>
 	</div>
 </div>

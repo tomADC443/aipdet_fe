@@ -97,7 +97,7 @@
 	}
 </script>
 
-<div class="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+<div class="min-h-screen w-full h-full lg:grid lg:grid-cols-2">
 	<div class="flex items-center justify-center py-12">
 		<form class="mx-auto grid w-[350px] gap-6">
 			<div class="grid gap-2 text-center">
@@ -188,7 +188,7 @@
 		<img
 			src="/src/lib/img/signup.png"
 			alt="satellite landscape of a river"
-			class="h-full w-full object-cover object-center dark:brightness-[0.7]"
+			class="h-full min-h-full min-w-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>
 	</div>
 </div>
