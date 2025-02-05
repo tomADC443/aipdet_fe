@@ -59,12 +59,12 @@
 				goto('/app/aoi'); // Redirect user to the aoi
 			} else {
 				const error = await response.json();
-
+				const detail = error.detail || error.data.detail;
 				// Handle specific error messages
-				if (error.detail === 'Email not verified.') {
-					goto('/email-verification'); // Redirect to email verification page
+				if (detail.includes('Email not verified')) {
+					goto('/auth/email-verification'); // Redirect to email verification page
 				} else {
-					apiError = error.detail || 'An unexpected error occurred.'; // Display other errors
+					apiError = detail || 'An unexpected error occurred.'; // Display other errors
 				}
 			}
 		} catch (err) {
