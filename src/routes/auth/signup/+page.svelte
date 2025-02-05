@@ -109,7 +109,7 @@
 			<div class="grid gap-4">
 				<div class="grid grid-cols-2 gap-4">
 					<div class="grid gap-2">
-						<Label for="last-name">First name</Label>
+						<Label for="first-name">First name</Label>
 						<Input
 							id="first-name"
 							placeholder="John"
