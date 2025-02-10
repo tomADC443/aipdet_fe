@@ -41,7 +41,7 @@
 			return;
 		}
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/login', {
+			const response = await fetch('http://api.aipdet.com/api/user/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
