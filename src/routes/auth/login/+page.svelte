@@ -7,6 +7,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import { z } from 'zod';
+	import { env } from '$env/dynamic/public';
 
 	// State for API error message
 	let apiError: null | string = null;
@@ -41,7 +42,7 @@
 			return;
 		}
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/login', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/user/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
