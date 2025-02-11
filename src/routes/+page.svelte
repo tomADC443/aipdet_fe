@@ -3,6 +3,30 @@
 	import * as Card from '$lib/components/ui/card/index';
 	import spacex from '$lib/img/spacex.jpg';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
+	const steps = [
+		{
+			number: 1,
+			title: 'Sign Up',
+			content: 'Create your account on the AIPDET platform to get started.'
+		},
+		{
+			number: 2,
+			title: 'Register Your Area',
+			content: 'Use the AOI tab to register and define your area of interest for analysis.'
+		},
+		{
+			number: 3,
+			title: 'Create Tasks',
+			content:
+				"Start a task for your AOI in the 'Task' tab. While processing, explore public tasks from other users."
+		},
+		{
+			number: 4,
+			title: 'View Reports',
+			content:
+				"Access detailed analysis and insights for your completed tasks in the 'Reports' tab."
+		}
+	];
 </script>
 
 <div class="flex flex-col items-center min-h-screen bg-[hsl(var(--background))] dark">
@@ -11,6 +35,11 @@
 		<div class="container mx-auto flex items-center justify-between">
 			<h1 class="text-xl font-bold text-[hsl(var(--primary))]">AipDet</h1>
 			<nav>
+				<a
+					href="#how-it-works"
+					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]"
+					>How it works</a
+				>
 				<a
 					href="#features"
 					class="px-4 text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))]">Features</a
@@ -30,7 +59,7 @@
 			</nav>
 		</div>
 	</header>
-	<!-- Hero Section -->
+
 	<!-- Hero Section -->
 	<section
 		class="relative flex flex-col items-center justify-center min-h-screen text-center w-full bg-cover bg-center"
@@ -51,6 +80,36 @@
 		</div>
 		<div class="absolute bottom-10 flex justify-center w-full">
 			<ChevronDown class="text-[hsl(var(--primary))] w-8 h-8 animate-bounce" />
+		</div>
+	</section>
+
+	<section
+		id="how-it-works"
+		class="container mx-auto py-12 min-h-screen flex flex-col justify-center"
+	>
+		<h3 class="text-3xl font-bold text-center text-[hsl(var(--foreground))] mb-8">How It Works</h3>
+		<div class="flex flex-col gap-8">
+			{#each steps as step}
+				<div class="flex items-start gap-6 items-center">
+					<div
+						class="w-12 h-12 shrink-0 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center"
+					>
+						<span class="text-xl font-bold text-[hsl(var(--primary-foreground))]">
+							{step.number}
+						</span>
+					</div>
+					<Card.Root class="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] flex-1">
+						<Card.Header>
+							<Card.Title>{step.title}</Card.Title>
+						</Card.Header>
+						<Card.Content>
+							<p class="text-[hsl(var(--muted-foreground))]">
+								{step.content}
+							</p>
+						</Card.Content>
+					</Card.Root>
+				</div>
+			{/each}
 		</div>
 	</section>
 
