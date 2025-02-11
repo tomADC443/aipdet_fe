@@ -10,7 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         [
             "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob:",
+            "img-src 'self' data: blob: https://tile.jawg.io",
             `connect-src 'self' ws: wss: ${apiDomain}`,
             "default-src 'self'",
             "font-src 'self'",
