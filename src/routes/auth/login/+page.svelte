@@ -9,7 +9,10 @@
 	import { z } from 'zod';
 	import { env } from '$env/dynamic/public';
 	import authImg from '$lib/img/authimg_small.jpg';
-
+	import { isLoggedIn } from '#app/stores';
+	if ($isLoggedIn) {
+		goto('/app/task');
+	}
 	// State for API error message
 	let apiError: null | string = null;
 	let isLoading = false;
