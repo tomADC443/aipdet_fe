@@ -216,7 +216,9 @@
 						specify the area. Only use the standard WGS84 longitude, latitude coordinates. Websites
 						like <a href="https://geojson.io/" target="_blank" rel="noopener" class="text-primary"
 							>geojson.io</a
-						> can help you create the GeoJson Polygon.
+						>
+						can help you create the GeoJson Polygon. <br /> Remeber to only insert one Feature not a
+						FeatureCollection.
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
