@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import { env } from '$env/dynamic/public';
-
+	import authImg from '$lib/img/authimg_small.jpg';
 	let isLoading = false;
 	let isProcessDone = false;
 	// State for API error message
@@ -113,7 +113,7 @@
 	</div>
 	<div class="hidden bg-muted lg:flex lg:basis-1/2">
 		<img
-			src="$lib/img/authimg_small.jpg"
+			src={authImg}
 			alt="satellite landscape of a river"
 			class="h-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>

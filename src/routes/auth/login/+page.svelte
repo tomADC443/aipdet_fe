@@ -8,6 +8,7 @@
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import { z } from 'zod';
 	import { env } from '$env/dynamic/public';
+	import authImg from '$lib/img/authimg_small.jpg';
 
 	// State for API error message
 	let apiError: null | string = null;
@@ -133,7 +134,7 @@
 	</div>
 	<div class="hidden bg-muted lg:flex lg:basis-1/2 h-full">
 		<img
-			src="/src/lib/img/authimg_small.jpg"
+			src={authImg}
 			alt="satellite landscape of a river"
 			class="h-full min-h-full min-w-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>

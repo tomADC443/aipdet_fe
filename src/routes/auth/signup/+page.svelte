@@ -7,6 +7,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { z } from 'zod';
 	import { env } from '$env/dynamic/public';
+	import signupImg from '$lib/img/signup.png';
 
 	let apiError: string | null = null;
 	let isLoading: boolean = false;
@@ -187,7 +188,7 @@
 	</div>
 	<div class="hidden bg-muted lg:flex lg:basis-1/2">
 		<img
-			src="/src/lib/img/signup.png"
+			src={signupImg}
 			alt="satellite landscape of a river"
 			class="h-full min-h-full min-w-full w-full object-cover object-center dark:brightness-[0.7]"
 		/>
