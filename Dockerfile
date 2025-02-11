@@ -18,8 +18,10 @@ COPY tailwind.config.js .
 COPY components.json .
 COPY eslint.config.js .
 
-# Copy source code - this includes everything in src/
+# Copy source code 
 COPY src ./src
+# Copy statics
+COPY static ./static
 
 # Build the application
 RUN npm run build
