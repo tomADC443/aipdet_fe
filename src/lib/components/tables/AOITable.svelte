@@ -9,6 +9,7 @@
 	import { formatUnixTimestampToLocalTime } from '#routes/app/utils';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import BanIcon from 'lucide-svelte/icons/ban';
+	import { env } from '$env/dynamic/public';
 
 	let aois: FetchedAOI[] = [];
 	let status: 'loading' | 'success' | 'empty' | 'error' = 'loading';
@@ -19,7 +20,7 @@
 	async function fetchAois() {
 		status = 'loading';
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aois', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/aois', {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
@@ -50,7 +51,7 @@
 
 	async function handleAoiDelete(id: string) {
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aoi', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/aoi', {
 				method: 'DELETE',
 				credentials: 'include',
 				headers: {

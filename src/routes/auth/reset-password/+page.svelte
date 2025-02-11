@@ -8,6 +8,7 @@
 	import { z } from 'zod';
 	import { onMount } from 'svelte';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import { env } from '$env/dynamic/public';
 
 	let isLoading = false;
 	let isProcessDone = false;
@@ -42,7 +43,7 @@
 			return;
 		}
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/reset-password', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/user/reset-password', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

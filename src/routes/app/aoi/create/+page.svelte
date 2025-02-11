@@ -17,6 +17,7 @@
 	import * as turf from '@turf/turf';
 	import { MAX_AREA_SKM, MIN_AREA_SKM } from '#app/aoi/constants';
 	import toast from 'svelte-french-toast';
+	import { env } from '$env/dynamic/public';
 
 	type NewAoiDataType = {
 		name: { value: string; valid: boolean; error: string };
@@ -56,7 +57,7 @@
 		}
 
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aoi', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/aoi', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -212,7 +213,10 @@
 					<Card.Title>Location</Card.Title>
 					<Card.Description
 						>Use this section to specify the location of the area. Use a GeoJSON Polygon Feature to
-						specify the area. Only use the standard WGS84 longitude, latitude coordinates.
+						specify the area. Only use the standard WGS84 longitude, latitude coordinates. Websites
+						like <a href="https://geojson.io/" target="_blank" rel="noopener" class="text-primary"
+							>geojson.io</a
+						> can help you create the GeoJson Polygon.
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>

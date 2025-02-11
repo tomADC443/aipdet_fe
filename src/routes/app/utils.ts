@@ -1,5 +1,5 @@
 import type { FetchResponse, FetchMethod, FetchOptions } from "./types";
-
+import { env } from '$env/dynamic/public';
 export function formatUnixTimestampToLocalTime(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000);
     return date.toLocaleString();
@@ -30,7 +30,7 @@ export async function authenticatedBackendFetch<T>(
 
     try {
         const response = await fetch(
-            `${import.meta.env.VITE_BASE_URL_API}/api/${endpoint}`,
+            `${env.PUBLIC_VITE_BASE_URL_API}/api/${endpoint}`,
             { ...mergedOptions, method: method }
         );
 

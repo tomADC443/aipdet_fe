@@ -12,15 +12,14 @@
 	import type { AOI } from '#routes/app/aoi/types';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import type { Selected } from 'bits-ui';
-
+	import { env } from '$env/dynamic/public';
 	let isLoading = false;
 	let apiError: string | null = null;
 	let aois: AOI[] = [];
 	let aoiFetchStatus: 'loading' | 'error' | 'success' | 'empty' = 'loading';
-
 	async function fetchAois() {
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/aois', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/aois', {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
@@ -105,7 +104,7 @@
 		apiError = null; // Clear previous errors before making the API call
 
 		try {
-			const apiResponse = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/task', {
+			const apiResponse = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/task', {
 				method: 'POST',
 				credentials: 'include',
 				headers: {

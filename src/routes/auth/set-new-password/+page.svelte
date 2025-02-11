@@ -8,6 +8,7 @@
 	import { z } from 'zod';
 	import { onMount } from 'svelte';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import { env } from '$env/dynamic/public';
 
 	let user: string | null = null;
 	let token: string | null = null;
@@ -54,17 +55,14 @@
 			return;
 		}
 		try {
-			const response = await fetch(
-				import.meta.env.VITE_BASE_URL_API + '/api/user/set-new-password',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Connection: 'keep-alive'
-					},
-					body: JSON.stringify({ userId: user, password, token })
-				}
-			);
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/user/set-new-password', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Connection: 'keep-alive'
+				},
+				body: JSON.stringify({ userId: user, password, token })
+			});
 
 			if (response.ok) {
 				// Login successful

@@ -17,6 +17,7 @@
 	import TaskTableView from './TaskTableView.svelte';
 	import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import { env } from '$env/dynamic/public';
 
 	let tasks: FetchData<Task[]> = {
 		status: 'loading',
@@ -43,7 +44,7 @@
 
 	async function handleDeleteClick(id: string) {
 		try {
-			const response = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/task', {
+			const response = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/task', {
 				method: 'DELETE',
 				credentials: 'include',
 				headers: {

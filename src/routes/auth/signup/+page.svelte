@@ -6,6 +6,7 @@
 	import CircleAlert from 'lucide-svelte/icons/circle-alert';
 	import * as Alert from '$lib/components/ui/alert';
 	import { z } from 'zod';
+	import { env } from '$env/dynamic/public';
 
 	let apiError: string | null = null;
 	let isLoading: boolean = false;
@@ -66,7 +67,7 @@
 		apiError = null; // Clear previous errors before making the API call
 
 		try {
-			const apiResponse = await fetch(import.meta.env.VITE_BASE_URL_API + '/api/user/signup', {
+			const apiResponse = await fetch(env.PUBLIC_VITE_BASE_URL_API + '/api/user/signup', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

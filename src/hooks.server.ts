@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
-
+import { env } from '$env/dynamic/public';
 export const handle: Handle = async ({ event, resolve }) => {
-    const apiDomain = import.meta.env.VITE_BASE_URL_API
+    const apiDomain = env.PUBLIC_VITE_BASE_URL_API
 
     const response = await resolve(event);
 
