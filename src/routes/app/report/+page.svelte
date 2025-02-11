@@ -15,19 +15,28 @@
 		<Separator />
 
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
-		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<p class="text-muted-foreground">All further analysis are done on the raw data of this Task.</p>
 		<TaskCards selectedTask={$selectedTask} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Inspector</h2>
-		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<p class="text-muted-foreground">
+			The Inspector allows to see the recognition results of each successfully processed satellite
+			image by day. Click on a date to inspect the data for this day. Click on a layer button to
+			show/hide a layer.
+		</p>
 		<InspectorCard selectedTask={$selectedTask} />
 		<Separator />
-		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">General Task Information</h2>
-		<p class="text-muted-foreground">Here's a list of your tasks for this month!</p>
+		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Seasons Analysis</h2>
+		<p class="text-muted-foreground">
+			The Season analysis recognizes cross-year vegetational patterns
+		</p>
 		<SeasonCards taskId={$selectedTask.id} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Growth Rate Patterns</h2>
-		<p class="text-muted-foreground">Some info here</p>
+		<p class="text-muted-foreground">
+			The weekly growth rate analysis reveals vegetation changes, identifying periods of rapid
+			growth and decline in the observed area.
+		</p>
 		<GrowthRatesCard taskId={$selectedTask.id} />
 		<Separator />
 		<h2 class="col-span-4 ext-base font-semibold md:text-2xl">Spatial Insights</h2>

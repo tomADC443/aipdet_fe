@@ -58,6 +58,8 @@
 			{/if}
 		</Card.Content>
 
-		<Card.Content class="text-muted-foreground text-xs">Some description here</Card.Content>
+		<Card.Content class="text-muted-foreground text-xs"
+			>Data displayed in non-linear heatmap style</Card.Content
+		>
 	</Card.Root>
 </div>

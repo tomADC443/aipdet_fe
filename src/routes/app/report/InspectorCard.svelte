@@ -112,7 +112,9 @@
 			/>
 		</Card.Content>
 
-		<Card.Content class="text-muted-foreground text-xs">Some description here</Card.Content>
+		<Card.Content class="text-muted-foreground text-xs"
+			>Some days might only display very small areas</Card.Content
+		>
 	</Card.Root>
 
 	<div class="col-span-1 justify-items-center rounded-md border h-full p-4 max-h-[800px]">
