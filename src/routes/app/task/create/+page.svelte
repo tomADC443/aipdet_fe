@@ -8,7 +8,8 @@
 		<h2 class="text-2xl font-bold tracking-tight">Add a new Task</h2>
 		<p class="text-muted-foreground">
 			Add a new Tasks. Public Tasks will be visible to other Users. Be aware that a public Task will
-			make the selected AOI data public as well.
+			make the selected AOI data public as well. <br />
+			Be advised that tasks can take up to 5hrs to be processed.
 		</p>
 	</div>
 	<Separator class="my-6" />
