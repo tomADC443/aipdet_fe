@@ -213,12 +213,16 @@
 					<Card.Title>Location</Card.Title>
 					<Card.Description
 						>Use this section to specify the location of the area. Use a GeoJSON Polygon Feature to
-						specify the area. Only use the standard WGS84 longitude, latitude coordinates. Websites
-						like <a href="https://geojson.io/" target="_blank" rel="noopener" class="text-primary"
-							>geojson.io</a
+						specify the target area. Only use the standard WGS84 longitude, latitude coordinates.
+						Websites like <a
+							href="https://geojson.io/"
+							target="_blank"
+							rel="noopener"
+							class="text-primary">geojson.io</a
 						>
-						can help you create the GeoJson Polygon. <br /> Remeber to only insert one Feature not a
-						FeatureCollection.
+						can help you create the GeoJson Polygon. <br /> Remember to only insert one Feature not
+						a FeatureCollection.<br />
+						AOIs should not exceed {MAX_AREA_SKM}km² and should be at least be {MIN_AREA_SKM} km² big.
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
