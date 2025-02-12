@@ -26,35 +26,7 @@ function isTokenValid() {
     }
 }
 
-
 // Create a derived store to check the token dynamically
 export const isLoggedIn = derived([], () => isTokenValid());
 
-
-
-
-
-
-
-
 export const selectedTask: Writable<Task | null> = writable(null);
-
-// export async function getSelectedTaskIdFromURL(): Promise<SelectedTaskInfo | null> {
-//     const queryParam = new URLSearchParams(window.location.search).get('selected_process_id') || '';
-//     if (!queryParam) return null;
-//     return await getProcessInfoFromId(queryParam);
-// }
-// async function getProcessInfoFromId(selectedProcessId: string): Promise<SelectedTaskInfo | null> {
-//     // Fetch process info from API
-//     const isError = false;
-//     if (isError) {
-//         window.history.replaceState({}, document.title, window.location.pathname);
-//         throw error(404, 'Entry for id not valid or deleted');
-//     }
-//     return Promise.resolve({
-//         id: selectedProcessId,
-//         taskName: 'Some Name Here',
-//         createdAt: 1732042266,
-//         status: 'completed',
-//     })
-// }
