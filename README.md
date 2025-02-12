@@ -3,19 +3,24 @@
 
 # How to run this project locally
 
-1. Clone this repository 
+## Prerequisites
 
-2. Install dependencies 
+- NodeJs 20.0 or higher
+- npm (Node Package Manager)
+
+### 1. Clone this repository 
+
+### 2. Install dependencies 
 
 
 ```bash
 npm install
 ```
 
-3. Add environment variables
+### 3. Add environment variables
 - create a '.env' file based on '.env.sample'
 
-4. Start the dev server
+### 4. Start the dev server
 
 ```bash
 npm run dev
